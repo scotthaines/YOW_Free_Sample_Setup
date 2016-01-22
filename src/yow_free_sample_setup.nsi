@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 08 Scott Haines
-; date: 2016 01 20
+; edit: 09 Scott Haines
+; date: 2016 01 22
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
 ;-------------------------------
@@ -107,16 +107,27 @@ Section "Dummy Section" SecDummy
     IfErrors REG_READ_FAILURE REG_READ_SUCCESS
 REG_READ_FAILURE:
 		; Reading the Git install location from the registry failed.
-		; Assume by this that Git is not installed.
-		MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
 		${If} ${RunningX64}
-		    # Install the 64 bit Git.
+			# There is a chance that they installed the 32 bit Git.
+			# Check for it as well.
+			SetRegView 32
+        	ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+		    IfErrors REG_READ_32_ON_64_FAILURE REG_READ_SUCCESS
+REG_READ_32_ON_64_FAILURE:
+        		; Assume by this that Git is not installed.
+				MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
+			    # Install the 64 bit Git.
+				MessageBox MB_OK "Install 64 bit Git."
+				Goto REG_READ_SUCCESS
         ${Else}
+			; Assume by this that Git is not installed.
+			MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
             # Install the 32 bit Git.
+			MessageBox MB_OK "Install 32 bit Git."
         ${EndIf}
 
 REG_READ_SUCCESS:
-	MessageBox MB_OK "This is the Git install location: $GitInstallLocation"
+	MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
 
     ; Add files and folders to install here.
 
