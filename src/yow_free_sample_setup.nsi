@@ -91,10 +91,11 @@ Section "Dummy Section" SecDummy
 ;  MessageBox MB_YESNO|MB_ICONQUESTION "Would you like to skip the rest of this section?" IDYES EndTestBranch
 ;  EndTestBranch:
 
+	; Determine the Git install location if it is installed.
 	Var /Global GitInstallLocation
-	StrCpy $GitInstallLocation "example value"
+	StrCpy $GitInstallLocation "placeholder value"
 
-	; The RunningX64 macro stuff is dependent on x64.nsh.
+	; This RunningX64 macro stuff is dependent on x64.nsh.
     ${If} ${RunningX64}
         # 64 bit code
         SetRegView 64
@@ -103,28 +104,42 @@ Section "Dummy Section" SecDummy
         SetRegView 32
     ${EndIf}
 
+	; First look for Git installed for all users.
 	ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-    IfErrors REG_READ_FAILURE REG_READ_SUCCESS
-REG_READ_FAILURE:
-		; Reading the Git install location from the registry failed.
-		${If} ${RunningX64}
-			# There is a chance that they installed the 32 bit Git.
-			# Check for it as well.
-			SetRegView 32
-        	ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-		    IfErrors REG_READ_32_ON_64_FAILURE REG_READ_SUCCESS
-REG_READ_32_ON_64_FAILURE:
-        		; Assume by this that Git is not installed.
-				MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
-			    # Install the 64 bit Git.
-				MessageBox MB_OK "Install 64 bit Git."
+    IfErrors REG_READ_FAILURE_A REG_READ_SUCCESS
+REG_READ_FAILURE_A:
+
+	; Second look for Git installed just for the current user.
+	ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+    IfErrors REG_READ_FAILURE_B REG_READ_SUCCESS
+REG_READ_FAILURE_B:
+
+	; Third look for a Git 32 bit install on a 64 bit OS and installed for all.
+	${If} ${RunningX64}
+		# There is a chance that they installed the 32 bit Git.
+		# Check for it as well.
+		SetRegView 32
+       	ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+	    IfErrors REG_READ_FAILURE_C REG_READ_SUCCESS
+REG_READ_FAILURE_C:
+
+			# Fourth look for a Git 32 bit install on a 64 bit OS and installed
+			# just for the current user.
+			ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+		    IfErrors REG_READ_FAILURE_D REG_READ_SUCCESS
 				Goto REG_READ_SUCCESS
-        ${Else}
-			; Assume by this that Git is not installed.
-			MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
-            # Install the 32 bit Git.
-			MessageBox MB_OK "Install 32 bit Git."
-        ${EndIf}
+    ${Else}
+		# Assume by this that Git is not installed.
+		MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
+        # Install the 32 bit Git.
+		MessageBox MB_OK "Install 32 bit Git."
+		Goto REG_READ_SUCCESS
+    ${EndIf}
+
+REG_READ_FAILURE_D:
+	; Install the 64 bit Git.
+	MessageBox MB_OK "Install 64 bit Git."
+	Goto REG_READ_SUCCESS
 
 REG_READ_SUCCESS:
 	MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
