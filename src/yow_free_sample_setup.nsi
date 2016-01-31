@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 09 Scott Haines
-; date: 2016 01 22
+; edit: 10 Scott Haines
+; date: 2016 01 31
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
 ;-------------------------------
@@ -148,11 +148,12 @@ REG_READ_SUCCESS:
 
     ; This installs the YOW Free Sample Git repository.
     File install_repository.cmd
+    File install_repository.sh
 
     ; Install the repository.
-;    ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\"' $0
+    ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\"' $0
 ;    ExecWait '"install_repository.cmd" jkl_mno' $0
-     ExecWait '"install_repository.cmd"' $0
+;    ExecWait '"install_repository.cmd"' $0
 	 ; If the return value is 0
     StrCmp "0" $0 0 INSTALLREPO_FAILURE
         ; Print success on cloning text.
@@ -200,6 +201,7 @@ WANTTO_UNINSTALL:
 
     ; Add files and folders to delete (uninstall) here.
     Delete "$INSTDIR\install_repository.cmd"
+    Delete "$INSTDIR\install_repository.sh"
     Delete "$INSTDIR\uninstall_repository.cmd"
     Delete "$INSTDIR\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\Uninstall.exe"
