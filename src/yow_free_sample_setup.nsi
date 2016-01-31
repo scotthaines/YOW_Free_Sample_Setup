@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 10 Scott Haines
+; edit: 11 Scott Haines
 ; date: 2016 01 31
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
@@ -138,10 +138,15 @@ REG_READ_FAILURE_C:
 		    IfErrors REG_READ_FAILURE_D REG_READ_SUCCESS
 				Goto REG_READ_SUCCESS
     ${Else}
+		StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
+GIT_INSTALL_FAILED32:
+			MessageBox MB_OK "Git was not installed. YOW Free Sample install will halt now." /SD IDOK
+			Abort "Git must be installed to install YOW Free Sample."
+
+INSTALL_GIT32:
 		# Assume by this that Git is not installed.
-		MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
-        # Install the 32 bit Git.
-		MessageBox MB_OK "Install 32 bit Git."
+		MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
+;		MessageBox MB_OK "Install 32 bit Git."
 		SetOutPath $PLUGINSDIR
 		SetRegView 32
 		File ..\data\Git-2.7.0-32-bit.exe
@@ -153,14 +158,15 @@ REG_READ_FAILURE_C:
     ${EndIf}
 
 REG_READ_FAILURE_D:
-	StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED INSTALL_GIT
-GIT_INSTALL_FAILED:
+	StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
+GIT_INSTALL_FAILED64:
 	MessageBox MB_OK "Git was not installed. YOW Free Sample install will halt now." /SD IDOK
 	Abort "Git must be installed to install YOW Free Sample."
 
-INSTALL_GIT:
-; Install the 64 bit Git.
-	MessageBox MB_OK "Install 64 bit Git."
+INSTALL_GIT64:
+	# Assume by this that Git is not installed.
+	MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
+;	MessageBox MB_OK "Install 64 bit Git."
 	SetOutPath $PLUGINSDIR
 	SetRegView 64
 	File ..\data\Git-2.7.0-64-bit.exe
