@@ -1,3 +1,12 @@
+#!/bin/bash
+# file: install_repository.sh
+# created: 2016 01 31, Scott Haines
+# edit: 02 Scott Haines
+# date: 2016 01 31
+# This shell script runs in Git's bash. It installs the YOW Free Sample Git 
+# repository by cloning it into the directory named repository in the
+# current working directory.
+# .
 # Run the next line to see commands and expand variables before running them.
 # set -x
 git clone c:/projects/yow_free_sample repository

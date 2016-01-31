@@ -80,7 +80,12 @@ Section "Dummy Section" SecDummy
                                         ; There is no components page so the
                                         ; name is not important
 
-    ; Set output path to the installation directory.
+	; Initialize the temporary folder path.
+	; "This folder is automatically deleted when the installer exits."
+	; It variable is $PLUGINSDIR.
+	InitPluginsDir
+
+	; Set output path to the installation directory.
     SetOutPath $INSTDIR
 
     ; Clone YOW Free Sample into the install directory.
@@ -93,6 +98,10 @@ Section "Dummy Section" SecDummy
 
 	; Determine the Git install location if it is installed.
 	Var /Global GitInstallLocation
+	Var /Global GitInstallCheckAB
+	StrCpy $GitInstallCheckAB "CheckA"	; This indicates first check.
+
+TRY_AGAIN:
 	StrCpy $GitInstallLocation "placeholder value"
 
 	; This RunningX64 macro stuff is dependent on x64.nsh.
@@ -133,13 +142,33 @@ REG_READ_FAILURE_C:
 		MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have reasons to use other settings."
         # Install the 32 bit Git.
 		MessageBox MB_OK "Install 32 bit Git."
-		Goto REG_READ_SUCCESS
+		SetOutPath $PLUGINSDIR
+		SetRegView 32
+		File ..\data\Git-2.7.0-32-bit.exe
+	    ExecWait '"Git-2.7.0-32-bit.exe"' $0
+		SetOutPath $INSTDIR
+;		Goto REG_READ_SUCCESS
+		StrCpy $GitInstallCheckAB "CheckB"	; This indicates second check.
+		Goto TRY_AGAIN
     ${EndIf}
 
 REG_READ_FAILURE_D:
-	; Install the 64 bit Git.
+	StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED INSTALL_GIT
+GIT_INSTALL_FAILED:
+	MessageBox MB_OK "Git was not installed. YOW Free Sample install will halt now." /SD IDOK
+	Abort "Git must be installed to install YOW Free Sample."
+
+INSTALL_GIT:
+; Install the 64 bit Git.
 	MessageBox MB_OK "Install 64 bit Git."
-	Goto REG_READ_SUCCESS
+	SetOutPath $PLUGINSDIR
+	SetRegView 64
+	File ..\data\Git-2.7.0-64-bit.exe
+    ExecWait '"Git-2.7.0-64-bit.exe"' $0
+    SetOutPath $INSTDIR
+;	Goto REG_READ_SUCCESS
+	StrCpy $GitInstallCheckAB "CheckB"	; This indicates second check.
+	Goto TRY_AGAIN
 
 REG_READ_SUCCESS:
 	MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
