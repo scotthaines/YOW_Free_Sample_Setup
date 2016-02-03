@@ -20,7 +20,7 @@
 
     InstallDirRegKey HKCU "Software\YOW\Free Sample" ""
 
-    RequestExecutionLevel admin
+    RequestExecutionLevel user
 
 ;--------------------------------
 ; MUI Interface Configuration
