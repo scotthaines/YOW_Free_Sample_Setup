@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 14 Scott Haines
+; edit: 15 Scott Haines
 ; date: 2016 02 06
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
@@ -206,8 +206,12 @@ INSTALLREPO_FAILURE:
 
 INSTALL_CONTINUE:
 	; Install the rest of the files.
+;    File ..\data\yow_free_sample.ico
 
-    ; Install the script which is run during uninstall.
+    CreateShortCut "YOW Free Sample.lnk" "$INSTDIR\repository\web\index.html"
+    CreateShortCut "$DESKTOP\YOW Free Sample.lnk" "$INSTDIR\repository\web\index.html"
+
+; Install the script which is run during uninstall.
 	; During uninstall it deletes the YOW Free Sample Git repository.
     ; File uninstall_repository.cmd
 
@@ -244,6 +248,9 @@ WANTTO_UNINSTALL:
     ; Delete "$INSTDIR\uninstall_repository.cmd"
     Delete "$INSTDIR\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\Uninstall.exe"
+
+    Delete "$INSTDIR\YOW Free Sample.lnk"
+    Delete "$DESKTOP\YOW Free Sample.lnk"
 
     RMDir "$INSTDIR\repository"
     RMDir "$INSTDIR"
