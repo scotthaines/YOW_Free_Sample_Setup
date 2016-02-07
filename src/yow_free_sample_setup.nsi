@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 11 Scott Haines
-; date: 2016 01 31
+; edit: 14 Scott Haines
+; date: 2016 02 06
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
 ;-------------------------------
@@ -15,6 +15,9 @@
 ;-------------------------------
     Name "YOW Free Sample"
     OutFile "..\exe\YOWFreeSampleSetup.exe"
+
+    !define MUI_ICON "..\data\yow_free_sample_green.ico"
+    !define MUI_UNICON "..\data\yow_free_sample_red.ico"
 
     InstallDir "$DOCUMENTS\YOW\Free Sample"
 
@@ -206,7 +209,7 @@ INSTALL_CONTINUE:
 
     ; Install the script which is run during uninstall.
 	; During uninstall it deletes the YOW Free Sample Git repository.
-    File uninstall_repository.cmd
+    ; File uninstall_repository.cmd
 
     ; Install the installer so people can easily see it.
 	; I think this is confusing for people who just want to
@@ -232,12 +235,13 @@ Section "Uninstall"
 WANTTO_UNINSTALL:
 
     ; Delete the YOW Free Sample Git repository.
-    ExecWait "$INSTDIR\uninstall_repository.cmd"
+	RMDir /r /REBOOTOK "$INSTDIR\repository"
+    ; ExecWait "$INSTDIR\uninstall_repository.cmd"
 
     ; Add files and folders to delete (uninstall) here.
     Delete "$INSTDIR\install_repository.cmd"
     Delete "$INSTDIR\install_repository.sh"
-    Delete "$INSTDIR\uninstall_repository.cmd"
+    ; Delete "$INSTDIR\uninstall_repository.cmd"
     Delete "$INSTDIR\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\Uninstall.exe"
 
