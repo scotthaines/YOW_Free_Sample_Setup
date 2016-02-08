@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 15 Scott Haines
-; date: 2016 02 06
+; edit: 16 Scott Haines
+; date: 2016 02 07
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
 ;-------------------------------
@@ -21,7 +21,7 @@
 
     InstallDir "$DOCUMENTS\YOW\Free Sample"
 
-    InstallDirRegKey HKCU "Software\YOW\Free Sample" ""
+    InstallDirRegKey HKCU "Software\YOW\Free Sample" "InstallLocation"
 
     RequestExecutionLevel user
 
@@ -29,6 +29,15 @@
 ; MUI Interface Configuration
 
     !define MUI_ABORTWARNING
+
+;--------------------------------
+; Language Selection Dialog Settings
+
+    ;Remember the installer language
+	!define MUI_LANGDLL_REGISTRY_ROOT "HKCU"
+	!define MUI_LANGDLL_REGISTRY_KEY  "Software\YOW\Free Sample"
+	!define MUI_LANGDLL_REGISTRY_VALUENAME "InstallerUILanguage"
+    !define MUI_LANGDLL_ALWAYSSHOW
 
 ;-------------------------------
 ; MUI pages
@@ -53,6 +62,7 @@
 ; 1 warning:
 ;  unknown variable/constant "" detected, ignoring (LangString ^BrowseBtn:1081)
 ;    !insertmacro MUI_LANGUAGE "Hindi"
+
     !insertmacro MUI_LANGUAGE "Indonesian"
     !insertmacro MUI_LANGUAGE "Italian"
     !insertmacro MUI_LANGUAGE "Norwegian"
@@ -67,14 +77,9 @@
     !insertmacro MUI_LANGUAGE "Korean"
     !insertmacro MUI_LANGUAGE "Vietnamese"
 
-Function .onInit
-
-  !insertmacro MUI_LANGDLL_DISPLAY
-
-FunctionEnd
-
-;ReserveFile MyPlugin.dll
-!insertmacro MUI_RESERVEFILE_LANGDLL ;Language selection dialog
+;--------------------------------
+    ; ReserveFile MyPlugin.dll
+    !insertmacro MUI_RESERVEFILE_LANGDLL ; Language selection dialog
 
 ;-------------------------------
 ; Installer section
@@ -180,7 +185,8 @@ INSTALL_GIT64:
 	Goto TRY_AGAIN
 
 REG_READ_SUCCESS:
-	MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
+; The following message box is for debugging.
+;   MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
 
     ; Add files and folders to install here.
 
@@ -222,7 +228,7 @@ INSTALL_CONTINUE:
     File yow_free_sample_setup.nsi
 
     ; Remember the installation folder.
-    WriteRegStr HKCU "Software\YOW\Free Sample" "" $INSTDIR
+    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$INSTDIR"
 
     ; Create the uninstaller.
     WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -266,4 +272,18 @@ WANTTO_UNINSTALL:
 WANTTO_NOTREBOOT:
 
 SectionEnd
+Function .onInit
+
+    ; !insertmacro MUI_UNGETLANGUAGE
+
+	!insertmacro MUI_LANGDLL_DISPLAY
+
+FunctionEnd
+
+Function un.onInit
+
+    !insertmacro MUI_UNGETLANGUAGE
+
+FunctionEnd
+
 ;===============================
