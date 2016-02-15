@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 16 Scott Haines
-; date: 2016 02 07
+; edit: 17 Scott Haines
+; date: 2016 02 15
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
 ;-------------------------------
@@ -13,11 +13,30 @@
     !include "x64.nsh"
 
 ;-------------------------------
-    Name "YOW Free Sample"
-    OutFile "..\exe\YOWFreeSampleSetup.exe"
-
     !define MUI_ICON "..\data\yow_free_sample_green.ico"
     !define MUI_UNICON "..\data\yow_free_sample_red.ico"
+;--------------------------------
+;Version Information
+
+    !define YFS_Version 1.0.0.0
+	!define YFS_LongName "YOW Free Sample"
+	!define YFS_InstallerName "YOWFreeSampleSetup.exe"
+	!define YFS_CompanyName "Friedbook"
+
+    Name "${YFS_LongName}"
+    OutFile "..\exe\${YFS_InstallerName}"
+
+    VIProductVersion ${YFS_Version}
+    VIAddVersionKey ProductName "${YFS_LongName}"
+    VIAddVersionKey Comments "Your Own Web Free Sample (YFS) provides simple browser pages in a Git version control repository. Visit https://sites.google.com/site/friedbook/ for more information."
+    VIAddVersionKey CompanyName ${YFS_CompanyName}
+    VIAddVersionKey LegalCopyright "Public Domain"
+    VIAddVersionKey FileDescription "${YFS_LongName} installer"
+    VIAddVersionKey FileVersion ${YFS_Version}
+    VIAddVersionKey ProductVersion ${YFS_Version}
+    ; VIAddVersionKey InternalName "There is no internal name for the YFS installer."
+    VIAddVersionKey LegalTrademarks "Friedbook is a Trademark of Scott Haines."
+    VIAddVersionKey OriginalFilename "${YFS_InstallerName}"
 
     InstallDir "$DOCUMENTS\YOW\Free Sample"
 
@@ -148,8 +167,8 @@ REG_READ_FAILURE_C:
     ${Else}
 		StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
 GIT_INSTALL_FAILED32:
-			MessageBox MB_OK "Git was not installed. YOW Free Sample install will halt now." /SD IDOK
-			Abort "Git must be installed to install YOW Free Sample."
+			MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
+			Abort "Git must be installed to install ${YFS_LongName}."
 
 INSTALL_GIT32:
 		# Assume by this that Git is not installed.
@@ -168,8 +187,8 @@ INSTALL_GIT32:
 REG_READ_FAILURE_D:
 	StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
 GIT_INSTALL_FAILED64:
-	MessageBox MB_OK "Git was not installed. YOW Free Sample install will halt now." /SD IDOK
-	Abort "Git must be installed to install YOW Free Sample."
+	MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
+	Abort "Git must be installed to install ${YFS_LongName}."
 
 INSTALL_GIT64:
 	# Assume by this that Git is not installed.
@@ -214,8 +233,8 @@ INSTALL_CONTINUE:
 	; Install the rest of the files.
 ;    File ..\data\yow_free_sample.ico
 
-    CreateShortCut "YOW Free Sample.lnk" "$INSTDIR\repository\web\index.html"
-    CreateShortCut "$DESKTOP\YOW Free Sample.lnk" "$INSTDIR\repository\web\index.html"
+    CreateShortCut "${YFS_LongName}.lnk" "$INSTDIR\repository\web\index.html"
+    CreateShortCut "$DESKTOP\${YFS_LongName}.lnk" "$INSTDIR\repository\web\index.html"
 
 ; Install the script which is run during uninstall.
 	; During uninstall it deletes the YOW Free Sample Git repository.
@@ -255,8 +274,8 @@ WANTTO_UNINSTALL:
     Delete "$INSTDIR\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\Uninstall.exe"
 
-    Delete "$INSTDIR\YOW Free Sample.lnk"
-    Delete "$DESKTOP\YOW Free Sample.lnk"
+    Delete "$INSTDIR\${YFS_LongName}.lnk"
+    Delete "$DESKTOP\${YFS_LongName}.lnk"
 
     RMDir "$INSTDIR\repository"
     RMDir "$INSTDIR"
