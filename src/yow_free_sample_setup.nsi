@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 17 Scott Haines
-; date: 2016 02 15
+; edit: 19 Scott Haines
+; date: 2016 03 21
 ; description:  This installs YOW Free Sample and Git if it is not
 ;				already installed.
 ;-------------------------------
@@ -21,6 +21,8 @@
     !define YFS_Version 1.0.0.0
 	!define YFS_LongName "YOW Free Sample"
 	!define YFS_InstallerName "YOWFreeSampleSetup.exe"
+	!define YFS_UninstallerName "uninstallYFS.exe"
+	!define YFS_UninstallersDir "uninstallYFS"
 	!define YFS_CompanyName "Friedbook"
 
     Name "${YFS_LongName}"
@@ -43,6 +45,7 @@
     InstallDirRegKey HKCU "Software\YOW\Free Sample" "InstallLocation"
 
     RequestExecutionLevel user
+    AllowRootDirInstall false
 
 ;--------------------------------
 ; MUI Interface Configuration
@@ -250,7 +253,8 @@ INSTALL_CONTINUE:
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$INSTDIR"
 
     ; Create the uninstaller.
-    WriteUninstaller "$INSTDIR\Uninstall.exe"
+	CreateDirectory "$INSTDIR\${YFS_UninstallersDir}"
+    WriteUninstaller "$INSTDIR\${YFS_UninstallersDir}\${YFS_UninstallerName}"
 
 SectionEnd
 
@@ -263,21 +267,21 @@ Section "Uninstall"
         Quit
 WANTTO_UNINSTALL:
 
-    ; Delete the YOW Free Sample Git repository.
-	RMDir /r /REBOOTOK "$INSTDIR\repository"
+    ; Delete the YOW Free Sample Git repository including changed files in it.
+	RMDir /r /REBOOTOK "$INSTDIR\..\repository"
     ; ExecWait "$INSTDIR\uninstall_repository.cmd"
 
     ; Add files and folders to delete (uninstall) here.
-    Delete "$INSTDIR\install_repository.cmd"
-    Delete "$INSTDIR\install_repository.sh"
-    ; Delete "$INSTDIR\uninstall_repository.cmd"
-    Delete "$INSTDIR\yow_free_sample_setup.nsi"
-    Delete "$INSTDIR\Uninstall.exe"
+    Delete "$INSTDIR\..\install_repository.cmd"
+    Delete "$INSTDIR\..\install_repository.sh"
+    ; Delete "$INSTDIR\..\uninstall_repository.cmd"
+    Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
+    Delete "$INSTDIR\${YFS_UninstallerName}"
 
-    Delete "$INSTDIR\${YFS_LongName}.lnk"
-    Delete "$DESKTOP\${YFS_LongName}.lnk"
+    Delete "$INSTDIR\..\${YFS_LongName}.lnk"
+    Delete "$DESKTOP\..\${YFS_LongName}.lnk"
 
-    RMDir "$INSTDIR\repository"
+	; The following removes the uninstaller's directory if it is now empty.
     RMDir "$INSTDIR"
 
     ; In this case no longer remember the last install directory.
