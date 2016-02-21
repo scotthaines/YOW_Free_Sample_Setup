@@ -2,9 +2,9 @@
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
 ; edit: 20 Scott Haines
-; date: 2016 02 21
+; date: 2016 02 22
 ; description:  This installs YOW Free Sample and Git if Git is not
-;				already installed.
+;               already installed.
 ;-------------------------------
 ; Modern User Interface 2 (MUI2)
     !include "mui2.nsh"
@@ -19,11 +19,11 @@
 ;Version Information
 
     !define YFS_Version 1.0.0.0
-	!define YFS_LongName "YOW Free Sample"
-	!define YFS_InstallerName "YOWFreeSampleSetup.exe"
-	!define YFS_UninstallerName "uninstallYFS.exe"
-	!define YFS_UninstallersDir "uninstallYFS"
-	!define YFS_CompanyName "Friedbook"
+    !define YFS_LongName "YOW Free Sample"
+    !define YFS_InstallerName "YOWFreeSampleSetup.exe"
+    !define YFS_UninstallerName "uninstallYFS.exe"
+    !define YFS_UninstallersDir "uninstallYFS"
+    !define YFS_CompanyName "Friedbook"
 
     Name "${YFS_LongName}"
     OutFile "..\exe\${YFS_InstallerName}"
@@ -56,9 +56,9 @@
 ; Language Selection Dialog Settings
 
     ;Remember the installer language
-	!define MUI_LANGDLL_REGISTRY_ROOT "HKCU"
-	!define MUI_LANGDLL_REGISTRY_KEY  "Software\YOW\Free Sample"
-	!define MUI_LANGDLL_REGISTRY_VALUENAME "InstallerUILanguage"
+    !define MUI_LANGDLL_REGISTRY_ROOT "HKCU"
+    !define MUI_LANGDLL_REGISTRY_KEY  "Software\YOW\Free Sample"
+    !define MUI_LANGDLL_REGISTRY_VALUENAME "InstallerUILanguage"
     !define MUI_LANGDLL_ALWAYSSHOW
 
 ;-------------------------------
@@ -110,15 +110,15 @@
 Section "draft (required)" SecDraft
                                         ; Now there is a components page so the
                                         ; name is important.
-	; The RO means the section is a Read Only section so it is required.
-	SectionIn RO
+    ; The RO means the section is a Read Only section so it is required.
+    SectionIn RO
 
-	; Initialize the temporary folder path.
-	; "This folder is automatically deleted when the installer exits."
-	; It variable is $PLUGINSDIR.
-	InitPluginsDir
+    ; Initialize the temporary folder path.
+    ; "This folder is automatically deleted when the installer exits."
+    ; It variable is $PLUGINSDIR.
+    InitPluginsDir
 
-	; Set output path to the installation directory.
+    ; Set output path to the installation directory.
     SetOutPath $INSTDIR
 
     ; Clone YOW Free Sample into the install directory.
@@ -129,15 +129,15 @@ Section "draft (required)" SecDraft
 ;  MessageBox MB_YESNO|MB_ICONQUESTION "Would you like to skip the rest of this section?" IDYES EndTestBranch
 ;  EndTestBranch:
 
-	; Determine the Git install location if it is installed.
-	Var /Global GitInstallLocation
-	Var /Global GitInstallCheckAB
-	StrCpy $GitInstallCheckAB "CheckA"	; This indicates first check.
+    ; Determine the Git install location if it is installed.
+    Var /Global GitInstallLocation
+    Var /Global GitInstallCheckAB
+    StrCpy $GitInstallCheckAB "CheckA"  ; This indicates first check.
 
 TRY_AGAIN:
-	StrCpy $GitInstallLocation "placeholder value"
+    StrCpy $GitInstallLocation "placeholder value"
 
-	; This RunningX64 macro stuff is dependent on x64.nsh.
+    ; This RunningX64 macro stuff is dependent on x64.nsh.
     ${If} ${RunningX64}
         # 64 bit code
         SetRegView 64
@@ -146,68 +146,68 @@ TRY_AGAIN:
         SetRegView 32
     ${EndIf}
 
-	; First look for Git installed for all users.
-	ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+    ; First look for Git installed for all users.
+    ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
     IfErrors REG_READ_FAILURE_A REG_READ_SUCCESS
 REG_READ_FAILURE_A:
 
-	; Second look for Git installed just for the current user.
-	ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+    ; Second look for Git installed just for the current user.
+    ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
     IfErrors REG_READ_FAILURE_B REG_READ_SUCCESS
 REG_READ_FAILURE_B:
 
-	; Third look for a Git 32 bit install on a 64 bit OS and installed for all.
-	${If} ${RunningX64}
-		# There is a chance that they installed the 32 bit Git.
-		# Check for it as well.
-		SetRegView 32
-       	ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-	    IfErrors REG_READ_FAILURE_C REG_READ_SUCCESS
+    ; Third look for a Git 32 bit install on a 64 bit OS and installed for all.
+    ${If} ${RunningX64}
+        # There is a chance that they installed the 32 bit Git.
+        # Check for it as well.
+        SetRegView 32
+        ReadRegStr $GitInstallLocation HKLM Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+        IfErrors REG_READ_FAILURE_C REG_READ_SUCCESS
 REG_READ_FAILURE_C:
 
-			# Fourth look for a Git 32 bit install on a 64 bit OS and installed
-			# just for the current user.
-			ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
-		    IfErrors REG_READ_FAILURE_D REG_READ_SUCCESS
-				Goto REG_READ_SUCCESS
+            # Fourth look for a Git 32 bit install on a 64 bit OS and installed
+            # just for the current user.
+            ReadRegStr $GitInstallLocation HKCU Software\Microsoft\Windows\CurrentVersion\Uninstall\Git_is1\ "InstallLocation"
+            IfErrors REG_READ_FAILURE_D REG_READ_SUCCESS
+                Goto REG_READ_SUCCESS
     ${Else}
-		StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
+        StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED32 INSTALL_GIT32
 GIT_INSTALL_FAILED32:
-			MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
-			Abort "Git must be installed to install ${YFS_LongName}."
+            MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
+            Abort "Git must be installed to install ${YFS_LongName}."
 
 INSTALL_GIT32:
-		# Assume by this that Git is not installed.
-		MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
-;		MessageBox MB_OK "Install 32 bit Git."
-		SetOutPath $PLUGINSDIR
-		SetRegView 32
-		File ..\data\Git-2.7.0-32-bit.exe
-	    ExecWait '"Git-2.7.0-32-bit.exe"' $0
-		SetOutPath $INSTDIR
-;		Goto REG_READ_SUCCESS
-		StrCpy $GitInstallCheckAB "CheckB"	; This indicates second check.
-		Goto TRY_AGAIN
+        # Assume by this that Git is not installed.
+        MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
+;       MessageBox MB_OK "Install 32 bit Git."
+        SetOutPath $PLUGINSDIR
+        SetRegView 32
+        File ..\data\Git-2.7.0-32-bit.exe
+        ExecWait '"Git-2.7.0-32-bit.exe"' $0
+        SetOutPath $INSTDIR
+;       Goto REG_READ_SUCCESS
+        StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
+        Goto TRY_AGAIN
     ${EndIf}
 
 REG_READ_FAILURE_D:
-	StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
+    StrCmpS $GitInstallCheckAB "CheckB" GIT_INSTALL_FAILED64 INSTALL_GIT64
 GIT_INSTALL_FAILED64:
-	MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
-	Abort "Git must be installed to install ${YFS_LongName}."
+    MessageBox MB_OK "Git was not installed. ${YFS_LongName} install will halt now." /SD IDOK
+    Abort "Git must be installed to install ${YFS_LongName}."
 
 INSTALL_GIT64:
-	# Assume by this that Git is not installed.
-	MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
-;	MessageBox MB_OK "Install 64 bit Git."
-	SetOutPath $PLUGINSDIR
-	SetRegView 64
-	File ..\data\Git-2.7.0-64-bit.exe
+    # Assume by this that Git is not installed.
+    MessageBox MB_OK "Git is not installed. When you press OK the Git installer will start. It is best to use the default Git installer settings presented to you unless you have clear reasons to use other settings."
+;   MessageBox MB_OK "Install 64 bit Git."
+    SetOutPath $PLUGINSDIR
+    SetRegView 64
+    File ..\data\Git-2.7.0-64-bit.exe
     ExecWait '"Git-2.7.0-64-bit.exe"' $0
     SetOutPath $INSTDIR
-;	Goto REG_READ_SUCCESS
-	StrCpy $GitInstallCheckAB "CheckB"	; This indicates second check.
-	Goto TRY_AGAIN
+;   Goto REG_READ_SUCCESS
+    StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
+    Goto TRY_AGAIN
 
 REG_READ_SUCCESS:
 ; The following message box is for debugging.
@@ -223,7 +223,7 @@ REG_READ_SUCCESS:
     ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\"' $0
 ;    ExecWait '"install_repository.cmd" jkl_mno' $0
 ;    ExecWait '"install_repository.cmd"' $0
-	 ; If the return value is 0
+     ; If the return value is 0
     StrCmp "0" $0 0 INSTALLREPO_FAILURE
         ; Print success on cloning text.
         DetailPrint "Success: The repository is cloned."
@@ -236,27 +236,27 @@ INSTALLREPO_FAILURE:
         Abort
 
 INSTALL_CONTINUE:
-	; Install the rest of the files.
+    ; Install the rest of the files.
 ;    File ..\data\yow_free_sample.ico
 
     CreateShortCut "${YFS_LongName}.lnk" "$INSTDIR\repository\web\index.html"
     CreateShortCut "$DESKTOP\${YFS_LongName}.lnk" "$INSTDIR\repository\web\index.html"
 
 ; Install the script which is run during uninstall.
-	; During uninstall it deletes the YOW Free Sample Git repository.
+    ; During uninstall it deletes the YOW Free Sample Git repository.
     ; File uninstall_repository.cmd
 
     ; Install the installer so people can easily see it.
-	; I think this is confusing for people who just want to
-	; use YOW Free Sample so the release version of this
-	; installer should not include this.
+    ; I think this is confusing for people who just want to
+    ; use YOW Free Sample so the release version of this
+    ; installer should not include this.
     File yow_free_sample_setup.nsi
 
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$INSTDIR"
 
     ; Create the uninstaller.
-	CreateDirectory "$INSTDIR\${YFS_UninstallersDir}"
+    CreateDirectory "$INSTDIR\${YFS_UninstallersDir}"
     WriteUninstaller "$INSTDIR\${YFS_UninstallersDir}\${YFS_UninstallerName}"
 
 SectionEnd
@@ -282,7 +282,7 @@ Section "Uninstall"
 WANTTO_UNINSTALL:
 
     ; Delete the YOW Free Sample Git repository including changed files in it.
-	RMDir /r /REBOOTOK "$INSTDIR\..\repository"
+    RMDir /r /REBOOTOK "$INSTDIR\..\repository"
     ; ExecWait "$INSTDIR\uninstall_repository.cmd"
 
     ; Add files and folders to delete (uninstall) here.
@@ -295,7 +295,7 @@ WANTTO_UNINSTALL:
     Delete "$INSTDIR\..\${YFS_LongName}.lnk"
     Delete "$DESKTOP\..\${YFS_LongName}.lnk"
 
-	; The following removes the uninstaller's directory if it is now empty.
+    ; The following removes the uninstaller's directory if it is now empty.
     RMDir "$INSTDIR"
 
     ; In this case no longer remember the last install directory.
@@ -313,7 +313,7 @@ Function .onInit
 
     ; !insertmacro MUI_UNGETLANGUAGE
 
-	!insertmacro MUI_LANGDLL_DISPLAY
+    !insertmacro MUI_LANGDLL_DISPLAY
 
 FunctionEnd
 
