@@ -1,9 +1,9 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 19 Scott Haines
-; date: 2016 03 21
-; description:  This installs YOW Free Sample and Git if it is not
+; edit: 20 Scott Haines
+; date: 2016 02 21
+; description:  This installs YOW Free Sample and Git if Git is not
 ;				already installed.
 ;-------------------------------
 ; Modern User Interface 2 (MUI2)
@@ -63,6 +63,7 @@
 
 ;-------------------------------
 ; MUI pages
+    !insertmacro MUI_PAGE_COMPONENTS
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
 
@@ -106,9 +107,11 @@
 ;-------------------------------
 ; Installer section
 ; In this installer this is the one and only installer section.
-Section "Dummy Section" SecDummy
-                                        ; There is no components page so the
-                                        ; name is not important
+Section "draft (required)" SecDraft
+                                        ; Now there is a components page so the
+                                        ; name is important.
+	; The RO means the section is a Read Only section so it is required.
+	SectionIn RO
 
 	; Initialize the temporary folder path.
 	; "This folder is automatically deleted when the installer exits."
@@ -257,6 +260,17 @@ INSTALL_CONTINUE:
     WriteUninstaller "$INSTDIR\${YFS_UninstallersDir}\${YFS_UninstallerName}"
 
 SectionEnd
+
+;--------------------------------
+; Descriptions
+
+  ; Language strings
+  LangString DESC_SecDraft ${LANG_ENGLISH} "Edit these pages to learn and create your own pages."
+
+  ;Assign language strings to sections
+  !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
+  !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;-------------------------------
 ; Uninstaller section
