@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 20 Scott Haines
+; edit: 21 Scott Haines
 ; date: 2016 02 23
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -20,6 +20,7 @@
 
     !define YFS_Version 1.0.0.0
     !define YFS_LongName "YOW Free Sample"
+    !define YFS_ShortName "YFS"
     !define YFS_InstallerName "YOWFreeSampleSetup.exe"
     !define YFS_UninstallerName "uninstallYFS.exe"
     !define YFS_UninstallersDir "uninstallYFS"
@@ -161,12 +162,13 @@ FunctionEnd
 
 ;-------------------------------
 ; Installer section
-; In this installer this is the one and only installer section.
+; Install working copy (draft) of the YOW Free Sample repository.
 Section "draft (required)" SecDraft
                                         ; Now there is a components page so the
                                         ; name is important.
     ; The RO means the section is a Read Only section so it is required.
     SectionIn RO
+    SectionIn 1
 
     ; Initialize the temporary folder path.
     ; "This folder is automatically deleted when the installer exits."
@@ -290,18 +292,12 @@ INSTALLREPO_FAILURE:
 
 INSTALL_CONTINUE:
     ; Install the rest of the files.
-    CreateShortCut "${YFS_LongName}.lnk" "$dirDraft\repository\web\index.html"
-    CreateShortCut "$DESKTOP\${YFS_LongName}.lnk" "$dirDraft\repository\web\index.html"
+    CreateShortCut "${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
+    CreateShortCut "$DESKTOP\${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
 
 ; Install the script which is run during uninstall.
     ; During uninstall it deletes the YOW Free Sample Git repository.
     ; File uninstall_repository.cmd
-
-    ; Install the installer so people can easily see it.
-    ; I think this is confusing for people who just want to
-    ; use YOW Free Sample so the release version of this
-    ; installer should not include this.
-    File yow_free_sample_setup.nsi
 
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationDraft" "$dirDraft"
@@ -313,15 +309,37 @@ INSTALL_CONTINUE:
 
 SectionEnd
 
+;-------------------------------
+; Installer section
+; Create the bare repository and push to it to initialize it and the
+; push path of the draft repository.
+Section "backup" SecBackup
+    ; The RO means the section is a Read Only section so it is required.
+    SectionIn 2
+
+    ; Set output path to the installation directory.
+    SetOutPath $dirBackup
+
+    ; Install the installer so people can easily see it.
+    ; I think this is confusing for people who just want to
+    ; use YOW Free Sample so the release version of this
+    ; installer should not include this.
+    File yow_free_sample_setup.nsi
+
+    ;--------
+SectionEnd
+
 ;--------------------------------
 ; Descriptions
 
   ; Language strings
   LangString DESC_SecDraft ${LANG_ENGLISH} "Edit these pages to learn and create your own pages."
+  LangString DESC_SecBackup ${LANG_ENGLISH} "The backup is a bare master Git repository. It is best to put this on another computer via a mapped drive."
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecBackup} $(DESC_SecBackup)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;-------------------------------
@@ -339,11 +357,11 @@ WANTTO_UNINSTALL:
     ; Add files and folders to delete (uninstall) here.
     Delete "$INSTDIR\..\install_repository.cmd"
     Delete "$INSTDIR\..\install_repository.sh"
-    Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
+;    Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\${YFS_UninstallerName}"
 
-    Delete "$INSTDIR\..\${YFS_LongName}.lnk"
-    Delete "$DESKTOP\${YFS_LongName}.lnk"
+    Delete "$INSTDIR\..\${YFS_ShortName} draft.lnk"
+    Delete "$DESKTOP\${YFS_ShortName} draft.lnk"
 
     ; The following removes the uninstaller's directory if it is now empty.
     RMDir "$INSTDIR"
