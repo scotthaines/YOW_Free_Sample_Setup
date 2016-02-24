@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 21 Scott Haines
-; date: 2016 02 23
+; edit: 22 Scott Haines
+; date: 2016 02 24
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -71,9 +71,9 @@
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
     !insertmacro MUI_PAGE_DIRECTORY
-!define MUI_PAGE_CUSTOMFUNCTION_PRE "BDirPre"
-!define MUI_PAGE_CUSTOMFUNCTION_LEAVE "BDirLv"
-    !insertmacro MUI_PAGE_DIRECTORY
+; !define MUI_PAGE_CUSTOMFUNCTION_PRE "BDirPre"
+; !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "BDirLv"
+;     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
 
 Function .onInit
@@ -104,24 +104,24 @@ AElse:
 AEndIf:
 FunctionEnd
 
-Function BDirPre
-    StrCmp "" "$dirBackup" BThen BElse
-BThen:
-        StrCpy $INSTDIR "$homeDir\backup\YFS"
-        GoTo BEndIf
-BElse:
-        StrCpy $INSTDIR "$dirBackup"
-        GoTo BEndIf
-BEndIf:
-FunctionEnd
+; Function BDirPre
+;     StrCmp "" "$dirBackup" BThen BElse
+; BThen:
+;         StrCpy $INSTDIR "$homeDir\backup\YFS"
+;         GoTo BEndIf
+; BElse:
+;         StrCpy $INSTDIR "$dirBackup"
+;         GoTo BEndIf
+; BEndIf:
+; FunctionEnd
 
 Function ADirLv
         StrCpy $dirDraft $INSTDIR
 FunctionEnd
 
-Function BDirLv
-        StrCpy $dirBackup $INSTDIR
-FunctionEnd
+; Function BDirLv
+;         StrCpy $dirBackup $INSTDIR
+; FunctionEnd
 
 ;-------------------------------
 ; MUI installer languages
@@ -293,9 +293,14 @@ INSTALLREPO_FAILURE:
 INSTALL_CONTINUE:
     ; Install the rest of the files.
     CreateShortCut "${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
-    CreateShortCut "$DESKTOP\${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
 
-; Install the script which is run during uninstall.
+    ; Install the installer so people can easily see it.
+    ; I think this is confusing for people who just want to
+    ; use YOW Free Sample so the release version of this
+    ; installer should not include this.
+    File yow_free_sample_setup.nsi
+
+    ; Install the script which is run during uninstall.
     ; During uninstall it deletes the YOW Free Sample Git repository.
     ; File uninstall_repository.cmd
 
@@ -313,20 +318,12 @@ SectionEnd
 ; Installer section
 ; Create the bare repository and push to it to initialize it and the
 ; push path of the draft repository.
-Section "backup" SecBackup
-    ; The RO means the section is a Read Only section so it is required.
+Section "desktop shortcut" SecDesktopShortcut
+    ; The 2 means the section is the second listed in the components page.
     SectionIn 2
 
-    ; Set output path to the installation directory.
-    SetOutPath $dirBackup
+    CreateShortCut "$DESKTOP\${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
 
-    ; Install the installer so people can easily see it.
-    ; I think this is confusing for people who just want to
-    ; use YOW Free Sample so the release version of this
-    ; installer should not include this.
-    File yow_free_sample_setup.nsi
-
-    ;--------
 SectionEnd
 
 ;--------------------------------
@@ -334,12 +331,12 @@ SectionEnd
 
   ; Language strings
   LangString DESC_SecDraft ${LANG_ENGLISH} "Edit these pages to learn and create your own pages."
-  LangString DESC_SecBackup ${LANG_ENGLISH} "The backup is a bare master Git repository. It is best to put this on another computer via a mapped drive."
+  LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut to the YOW Free Sample home page."
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecBackup} $(DESC_SecBackup)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;-------------------------------
@@ -357,7 +354,7 @@ WANTTO_UNINSTALL:
     ; Add files and folders to delete (uninstall) here.
     Delete "$INSTDIR\..\install_repository.cmd"
     Delete "$INSTDIR\..\install_repository.sh"
-;    Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
+    Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\${YFS_UninstallerName}"
 
     Delete "$INSTDIR\..\${YFS_ShortName} draft.lnk"
