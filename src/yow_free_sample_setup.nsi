@@ -2,7 +2,7 @@
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
 ; edit: 20 Scott Haines
-; date: 2016 02 22
+; date: 2016 02 23
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -40,9 +40,12 @@
     VIAddVersionKey LegalTrademarks "Friedbook is a Trademark of Scott Haines."
     VIAddVersionKey OriginalFilename "${YFS_InstallerName}"
 
-    InstallDir "$DOCUMENTS\YOW\Free Sample"
-
-    InstallDirRegKey HKCU "Software\YOW\Free Sample" "InstallLocation"
+    ; Initialize the INSTDIR.
+    InstallDir ""
+                                        ; An empty string here makes the
+                                        ; Browser button work reasonably
+                                        ; with the MUI_PAGE_CUSTOMFUNCTION_PRE
+                                        ; function writing to INSTDIR.
 
     RequestExecutionLevel user
     AllowRootDirInstall false
@@ -64,8 +67,60 @@
 ;-------------------------------
 ; MUI pages
     !insertmacro MUI_PAGE_COMPONENTS
+!define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
+!define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
+    !insertmacro MUI_PAGE_DIRECTORY
+!define MUI_PAGE_CUSTOMFUNCTION_PRE "BDirPre"
+!define MUI_PAGE_CUSTOMFUNCTION_LEAVE "BDirLv"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
+
+Function .onInit
+
+    Var /GLOBAL dirDraft
+    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationDraft"
+    StrCpy $dirDraft "$0"
+
+    Var /GLOBAL dirBackup
+    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationBackup"
+    StrCpy $dirBackup "$0"
+
+    Var /GLOBAL homeDir
+    ReadEnvStr $homeDir HOMEDRIVE
+
+    !insertmacro MUI_LANGDLL_DISPLAY
+
+FunctionEnd
+
+Function ADirPre
+    StrCmp "" "$dirDraft" AThen AElse
+AThen:
+        StrCpy $INSTDIR "$DOCUMENTS\draft\YFS"
+        GoTo AEndIf
+AElse:
+        StrCpy $INSTDIR "$dirDraft"
+        GoTo AEndIf
+AEndIf:
+FunctionEnd
+
+Function BDirPre
+    StrCmp "" "$dirBackup" BThen BElse
+BThen:
+        StrCpy $INSTDIR "$homeDir\backup\YFS"
+        GoTo BEndIf
+BElse:
+        StrCpy $INSTDIR "$dirBackup"
+        GoTo BEndIf
+BEndIf:
+FunctionEnd
+
+Function ADirLv
+        StrCpy $dirDraft $INSTDIR
+FunctionEnd
+
+Function BDirLv
+        StrCpy $dirBackup $INSTDIR
+FunctionEnd
 
 ;-------------------------------
 ; MUI installer languages
@@ -119,15 +174,11 @@ Section "draft (required)" SecDraft
     InitPluginsDir
 
     ; Set output path to the installation directory.
-    SetOutPath $INSTDIR
+;    SetOutPath $INSTDIR
+    SetOutPath $dirDraft
 
-    ; Clone YOW Free Sample into the install directory.
-;    IfFileExists "$INSTDIR\LogicLib.nsi" 0 BranchTest69
-;    MessageBox MB_YESNO|MB_ICONQUESTION "Would you like to overwrite $INSTDIR\LogicLib.nsi?" IDNO NoOverwrite ; skipped if file doesn't exist
-;    BranchTest69:
-; more
-;  MessageBox MB_YESNO|MB_ICONQUESTION "Would you like to skip the rest of this section?" IDYES EndTestBranch
-;  EndTestBranch:
+    ;--------
+    ; Install Git if it is not already installed.
 
     ; Determine the Git install location if it is installed.
     Var /Global GitInstallLocation
@@ -184,7 +235,8 @@ INSTALL_GIT32:
         SetRegView 32
         File ..\data\Git-2.7.0-32-bit.exe
         ExecWait '"Git-2.7.0-32-bit.exe"' $0
-        SetOutPath $INSTDIR
+;        SetOutPath $INSTDIR
+        SetOutPath $dirDraft
 ;       Goto REG_READ_SUCCESS
         StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
         Goto TRY_AGAIN
@@ -204,7 +256,8 @@ INSTALL_GIT64:
     SetRegView 64
     File ..\data\Git-2.7.0-64-bit.exe
     ExecWait '"Git-2.7.0-64-bit.exe"' $0
-    SetOutPath $INSTDIR
+;    SetOutPath $INSTDIR
+    SetOutPath $dirDraft
 ;   Goto REG_READ_SUCCESS
     StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
     Goto TRY_AGAIN
@@ -213,6 +266,8 @@ REG_READ_SUCCESS:
 ; The following message box is for debugging.
 ;   MessageBox MB_OK "Git is already installed. This is the Git install location: $GitInstallLocation"
 
+    ;--------
+    ; Clone YOW Free Sample into the install directory.
     ; Add files and folders to install here.
 
     ; This installs the YOW Free Sample Git repository.
@@ -221,9 +276,7 @@ REG_READ_SUCCESS:
 
     ; Install the repository.
     ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\"' $0
-;    ExecWait '"install_repository.cmd" jkl_mno' $0
-;    ExecWait '"install_repository.cmd"' $0
-     ; If the return value is 0
+    ; If the return value is 0
     StrCmp "0" $0 0 INSTALLREPO_FAILURE
         ; Print success on cloning text.
         DetailPrint "Success: The repository is cloned."
@@ -237,10 +290,8 @@ INSTALLREPO_FAILURE:
 
 INSTALL_CONTINUE:
     ; Install the rest of the files.
-;    File ..\data\yow_free_sample.ico
-
-    CreateShortCut "${YFS_LongName}.lnk" "$INSTDIR\repository\web\index.html"
-    CreateShortCut "$DESKTOP\${YFS_LongName}.lnk" "$INSTDIR\repository\web\index.html"
+    CreateShortCut "${YFS_LongName}.lnk" "$dirDraft\repository\web\index.html"
+    CreateShortCut "$DESKTOP\${YFS_LongName}.lnk" "$dirDraft\repository\web\index.html"
 
 ; Install the script which is run during uninstall.
     ; During uninstall it deletes the YOW Free Sample Git repository.
@@ -253,11 +304,12 @@ INSTALL_CONTINUE:
     File yow_free_sample_setup.nsi
 
     ; Remember the installation folder.
-    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$INSTDIR"
+    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationDraft" "$dirDraft"
+    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationBackup" "$dirBackup"
 
     ; Create the uninstaller.
-    CreateDirectory "$INSTDIR\${YFS_UninstallersDir}"
-    WriteUninstaller "$INSTDIR\${YFS_UninstallersDir}\${YFS_UninstallerName}"
+    CreateDirectory "$dirDraft\${YFS_UninstallersDir}"
+    WriteUninstaller "$dirDraft\${YFS_UninstallersDir}\${YFS_UninstallerName}"
 
 SectionEnd
 
@@ -267,7 +319,7 @@ SectionEnd
   ; Language strings
   LangString DESC_SecDraft ${LANG_ENGLISH} "Edit these pages to learn and create your own pages."
 
-  ;Assign language strings to sections
+  ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -283,17 +335,15 @@ WANTTO_UNINSTALL:
 
     ; Delete the YOW Free Sample Git repository including changed files in it.
     RMDir /r /REBOOTOK "$INSTDIR\..\repository"
-    ; ExecWait "$INSTDIR\uninstall_repository.cmd"
 
     ; Add files and folders to delete (uninstall) here.
     Delete "$INSTDIR\..\install_repository.cmd"
     Delete "$INSTDIR\..\install_repository.sh"
-    ; Delete "$INSTDIR\..\uninstall_repository.cmd"
     Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
     Delete "$INSTDIR\${YFS_UninstallerName}"
 
     Delete "$INSTDIR\..\${YFS_LongName}.lnk"
-    Delete "$DESKTOP\..\${YFS_LongName}.lnk"
+    Delete "$DESKTOP\${YFS_LongName}.lnk"
 
     ; The following removes the uninstaller's directory if it is now empty.
     RMDir "$INSTDIR"
@@ -309,13 +359,6 @@ WANTTO_UNINSTALL:
 WANTTO_NOTREBOOT:
 
 SectionEnd
-Function .onInit
-
-    ; !insertmacro MUI_UNGETLANGUAGE
-
-    !insertmacro MUI_LANGDLL_DISPLAY
-
-FunctionEnd
 
 Function un.onInit
 
