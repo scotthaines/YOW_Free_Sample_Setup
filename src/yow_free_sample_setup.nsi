@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 22 Scott Haines
-; date: 2016 02 24
+; edit: 24 Scott Haines
+; date: 2016 02 25
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -10,7 +10,10 @@
     !include "mui2.nsh"
 
 ; x64 bit OS detection
-    !include "x64.nsh"
+    !include "x64.nsh"                  ; Note that mui2.nsh or x64.nsh
+                                        ; must include LogicLib.nsh to
+                                        ; allow the {If} below to work.
+    !include "FileFunc.nsh"
 
 ;-------------------------------
     !define MUI_ICON "..\data\yow_free_sample_green.ico"
@@ -94,29 +97,32 @@ Function .onInit
 FunctionEnd
 
 Function ADirPre
-    StrCmp "" "$dirDraft" AThen AElse
-AThen:
+    ${If} "" == "$dirDraft"
         StrCpy $INSTDIR "$DOCUMENTS\draft\YFS"
-        GoTo AEndIf
-AElse:
+    ${Else}
         StrCpy $INSTDIR "$dirDraft"
-        GoTo AEndIf
-AEndIf:
+    ${EndIf}
 FunctionEnd
 
 ; Function BDirPre
-;     StrCmp "" "$dirBackup" BThen BElse
-; BThen:
-;         StrCpy $INSTDIR "$homeDir\backup\YFS"
-;         GoTo BEndIf
-; BElse:
-;         StrCpy $INSTDIR "$dirBackup"
-;         GoTo BEndIf
-; BEndIf:
+;     ${If} "" == "$dirBackup"
+;         StrCpy $INSTDIR "$DOCUMENTS\backup\YFS"
+;     ${Else}
+;         StrCpy $INSTDIR "$dirDraft"
+;     ${EndIf}
 ; FunctionEnd
 
 Function ADirLv
+    ; If the directory is empty or not found
+    ${DirState} $INSTDIR $R0
+    ${If} 1 != $R0
+        ; Use the selected directory.
         StrCpy $dirDraft $INSTDIR
+    ${Else}
+        ; Make the user try again.
+        MessageBox MB_OK "The install directory must be empty or not exist. Enter another install directory." /SD IDOK
+        Abort
+    ${EndIf}
 FunctionEnd
 
 ; Function BDirLv
@@ -292,7 +298,11 @@ INSTALLREPO_FAILURE:
 
 INSTALL_CONTINUE:
     ; Install the rest of the files.
-    CreateShortCut "${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
+
+    ; Get the last folder in the dirDraft path.
+    ${GetFileName} "$dirDraft" $R0
+    ; Name the shortcut with the last folder's name.
+    CreateShortCut "$R0.lnk" "$dirDraft\repository\web\index.html"
 
     ; Install the installer so people can easily see it.
     ; I think this is confusing for people who just want to
@@ -322,7 +332,10 @@ Section "desktop shortcut" SecDesktopShortcut
     ; The 2 means the section is the second listed in the components page.
     SectionIn 2
 
-    CreateShortCut "$DESKTOP\${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
+    ${GetFileName} "$dirDraft" $R0
+
+;    CreateShortCut "$DESKTOP\${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
+    CreateShortCut "$DESKTOP\$R0.lnk" "$dirDraft\repository\web\index.html"
 
 SectionEnd
 
