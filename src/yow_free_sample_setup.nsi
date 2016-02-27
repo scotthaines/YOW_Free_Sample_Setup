@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 28 Scott Haines
+; edit: 29 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -17,7 +17,7 @@
 
 ;-------------------------------
     !define MUI_ICON "..\data\yow_free_sample_green.ico"
-    !define MUI_UNICON "..\data\yow_free_sample_red.ico"
+
 ;--------------------------------
 ;Version Information
 
