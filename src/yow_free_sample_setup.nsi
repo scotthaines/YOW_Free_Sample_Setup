@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 24 Scott Haines
-; date: 2016 02 25
+; edit: 25 Scott Haines
+; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -118,31 +118,15 @@ FunctionEnd
 ;-------------------------------
 ; MUI installer languages
 
-    ; Offer the commonly spoken and well known languages.
+    ; Offer many languages.
     !insertmacro MUI_LANGUAGE "English"
     !insertmacro MUI_LANGUAGE "Arabic"
-    !insertmacro MUI_LANGUAGE "Danish"
-    !insertmacro MUI_LANGUAGE "Dutch"
     !insertmacro MUI_LANGUAGE "German"
-    !insertmacro MUI_LANGUAGE "Greek"
-    !insertmacro MUI_LANGUAGE "Farsi"
-    !insertmacro MUI_LANGUAGE "Finnish"
     !insertmacro MUI_LANGUAGE "French"
-    !insertmacro MUI_LANGUAGE "Hebrew"
-; Including Hindi generates the following warning when the installer is built.
-; 1 warning:
-;  unknown variable/constant "" detected, ignoring (LangString ^BrowseBtn:1081)
-;    !insertmacro MUI_LANGUAGE "Hindi"
-
-    !insertmacro MUI_LANGUAGE "Indonesian"
     !insertmacro MUI_LANGUAGE "Italian"
-    !insertmacro MUI_LANGUAGE "Norwegian"
-    !insertmacro MUI_LANGUAGE "Portuguese"
     !insertmacro MUI_LANGUAGE "Russian"
     !insertmacro MUI_LANGUAGE "Spanish"
     !insertmacro MUI_LANGUAGE "SimpChinese"
-    !insertmacro MUI_LANGUAGE "Swedish"
-    !insertmacro MUI_LANGUAGE "Thai"
     !insertmacro MUI_LANGUAGE "TradChinese"
     !insertmacro MUI_LANGUAGE "Japanese"
     !insertmacro MUI_LANGUAGE "Korean"
