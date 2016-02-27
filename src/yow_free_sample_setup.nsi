@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 29 Scott Haines
+; edit: 30 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -78,7 +78,8 @@
 
 Function ADirPre
     ${If} "" == "$dirDraft"
-        StrCpy $INSTDIR "$DOCUMENTS\draft\YFS"
+        ; This is the default install location.
+        StrCpy $INSTDIR "$DOCUMENTS\drafts\${YFS_ShortName}"
     ${Else}
         StrCpy $INSTDIR "$dirDraft"
     ${EndIf}
@@ -251,7 +252,7 @@ INSTALLREPO_FAILURE:
 INSTALL_CONTINUE:
     ; Install the rest of the files.
 
-    ; Get the last folder in the dirDraft path.
+    ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
     ; Name the shortcut with the last folder's name.
     CreateShortCut "$R0.lnk" "$dirDraft\repository\web\index.html"
@@ -263,7 +264,7 @@ INSTALL_CONTINUE:
     File yow_free_sample_setup.nsi
 
     ; Remember the installation folder.
-    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationDraft" "$dirDraft"
+    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$dirDraft"
 
 SectionEnd
 
@@ -275,9 +276,8 @@ Section "desktop shortcut" SecDesktopShortcut
     ; The 2 means the section is the second listed in the components page.
     SectionIn 2
 
+    ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
-
-;    CreateShortCut "$DESKTOP\${YFS_ShortName} draft.lnk" "$dirDraft\repository\web\index.html"
     CreateShortCut "$DESKTOP\$R0.lnk" "$dirDraft\repository\web\index.html"
 
 SectionEnd
@@ -291,18 +291,17 @@ SectionEnd
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function .onInit
 
-    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationDraft"
+    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocation"
     StrCpy $dirDraft "$0"
 
     ReadEnvStr $homeDir HOMEDRIVE
 
-    ; !insertmacro MUI_UNGETLANGUAGE
     !insertmacro MUI_LANGDLL_DISPLAY
 
 FunctionEnd
