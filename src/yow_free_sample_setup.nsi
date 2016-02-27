@@ -64,11 +64,19 @@
 
 ;-------------------------------
 ; MUI pages
+
+; The following two defines make the show details displayed before the
+; finish page.
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+
+    !insertmacro MUI_PAGE_WELCOME
+;    !insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
     !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
+    !insertmacro MUI_PAGE_FINISH
 
     Var /GLOBAL dirDraft
     Var /GLOBAL homeDir
