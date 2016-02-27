@@ -79,22 +79,8 @@
 ;     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
 
-Function .onInit
-
     Var /GLOBAL dirDraft
-    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationDraft"
-    StrCpy $dirDraft "$0"
-
-    Var /GLOBAL dirBackup
-    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationBackup"
-    StrCpy $dirBackup "$0"
-
     Var /GLOBAL homeDir
-    ReadEnvStr $homeDir HOMEDRIVE
-
-    !insertmacro MUI_LANGDLL_DISPLAY
-
-FunctionEnd
 
 Function ADirPre
     ${If} "" == "$dirDraft"
@@ -387,6 +373,22 @@ WANTTO_UNINSTALL:
 WANTTO_NOTREBOOT:
 
 SectionEnd
+
+Function .onInit
+
+    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationDraft"
+    StrCpy $dirDraft "$0"
+
+;    Var /GLOBAL dirBackup
+;    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationBackup"
+;    StrCpy $dirBackup "$0"
+
+    ReadEnvStr $homeDir HOMEDRIVE
+
+    ; !insertmacro MUI_UNGETLANGUAGE
+    !insertmacro MUI_LANGDLL_DISPLAY
+
+FunctionEnd
 
 Function un.onInit
 
