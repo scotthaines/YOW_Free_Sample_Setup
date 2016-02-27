@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 27 Scott Haines
+; edit: 28 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -25,8 +25,6 @@
     !define YFS_LongName "YOW Free Sample"
     !define YFS_ShortName "YFS"
     !define YFS_InstallerName "YOWFreeSampleSetup.exe"
-    !define YFS_UninstallerName "uninstallYFS.exe"
-    !define YFS_UninstallersDir "uninstallYFS"
 
     Name "${YFS_LongName}"
     OutFile "..\exe\${YFS_InstallerName}"
@@ -264,16 +262,8 @@ INSTALL_CONTINUE:
     ; installer should not include this.
     File yow_free_sample_setup.nsi
 
-    ; Install the script which is run during uninstall.
-    ; During uninstall it deletes the YOW Free Sample Git repository.
-    ; File uninstall_repository.cmd
-
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationDraft" "$dirDraft"
-
-    ; Create the uninstaller.
-    CreateDirectory "$dirDraft\${YFS_UninstallersDir}"
-    WriteUninstaller "$dirDraft\${YFS_UninstallersDir}\${YFS_UninstallerName}"
 
 SectionEnd
 
@@ -305,42 +295,6 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
-;-------------------------------
-; Uninstaller section
-
-Section "Uninstall"
-
-    MessageBox MB_OKCANCEL|MB_ICONQUESTION|MB_DEFBUTTON2 "Uninstall complete removes data. Your changes will be lost. Do you want to uninstall?" IDOK WANTTO_UNINSTALL 0
-        Quit
-WANTTO_UNINSTALL:
-
-    ; Delete the YOW Free Sample Git repository including changed files in it.
-    RMDir /r /REBOOTOK "$INSTDIR\..\repository"
-
-    ; Add files and folders to delete (uninstall) here.
-    Delete "$INSTDIR\..\install_repository.cmd"
-    Delete "$INSTDIR\..\install_repository.sh"
-    Delete "$INSTDIR\..\yow_free_sample_setup.nsi"
-    Delete "$INSTDIR\${YFS_UninstallerName}"
-
-    Delete "$INSTDIR\..\${YFS_ShortName} draft.lnk"
-    Delete "$DESKTOP\${YFS_ShortName} draft.lnk"
-
-    ; The following removes the uninstaller's directory if it is now empty.
-    RMDir "$INSTDIR"
-
-    ; In this case no longer remember the last install directory.
-    DeleteRegKey /ifempty HKCU "Software\YOW\Free Sample"
-
-    ; The reboot is required to avoid anti-virus programs like ESET
-    ; from making an install after an uninstall impossibly slow
-    ; during the clone of the repository.
-    MessageBox MB_YESNO|MB_ICONQUESTION "A reboot is required to complete the uninstall. Do you wish to the computer reboot now?" IDNO WANTTO_NOTREBOOT
-        Reboot
-WANTTO_NOTREBOOT:
-
-SectionEnd
-
 Function .onInit
 
     ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationDraft"
@@ -350,12 +304,6 @@ Function .onInit
 
     ; !insertmacro MUI_UNGETLANGUAGE
     !insertmacro MUI_LANGDLL_DISPLAY
-
-FunctionEnd
-
-Function un.onInit
-
-    !insertmacro MUI_UNGETLANGUAGE
 
 FunctionEnd
 
