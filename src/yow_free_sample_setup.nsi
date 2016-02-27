@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 25 Scott Haines
+; edit: 27 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -73,9 +73,6 @@
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
     !insertmacro MUI_PAGE_DIRECTORY
-; !define MUI_PAGE_CUSTOMFUNCTION_PRE "BDirPre"
-; !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "BDirLv"
-;     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
 
     Var /GLOBAL dirDraft
@@ -89,14 +86,6 @@ Function ADirPre
     ${EndIf}
 FunctionEnd
 
-; Function BDirPre
-;     ${If} "" == "$dirBackup"
-;         StrCpy $INSTDIR "$DOCUMENTS\backup\YFS"
-;     ${Else}
-;         StrCpy $INSTDIR "$dirDraft"
-;     ${EndIf}
-; FunctionEnd
-
 Function ADirLv
     ; If the directory is empty or not found
     ${DirState} $INSTDIR $R0
@@ -109,10 +98,6 @@ Function ADirLv
         Abort
     ${EndIf}
 FunctionEnd
-
-; Function BDirLv
-;         StrCpy $dirBackup $INSTDIR
-; FunctionEnd
 
 ;-------------------------------
 ; MUI installer languages
@@ -285,7 +270,6 @@ INSTALL_CONTINUE:
 
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationDraft" "$dirDraft"
-    WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocationBackup" "$dirBackup"
 
     ; Create the uninstaller.
     CreateDirectory "$dirDraft\${YFS_UninstallersDir}"
@@ -361,10 +345,6 @@ Function .onInit
 
     ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationDraft"
     StrCpy $dirDraft "$0"
-
-;    Var /GLOBAL dirBackup
-;    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocationBackup"
-;    StrCpy $dirBackup "$0"
 
     ReadEnvStr $homeDir HOMEDRIVE
 
