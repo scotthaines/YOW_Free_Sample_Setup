@@ -27,7 +27,6 @@
     !define YFS_InstallerName "YOWFreeSampleSetup.exe"
     !define YFS_UninstallerName "uninstallYFS.exe"
     !define YFS_UninstallersDir "uninstallYFS"
-    !define YFS_CompanyName "Friedbook"
 
     Name "${YFS_LongName}"
     OutFile "..\exe\${YFS_InstallerName}"
@@ -35,13 +34,13 @@
     VIProductVersion ${YFS_Version}
     VIAddVersionKey ProductName "${YFS_LongName}"
     VIAddVersionKey Comments "Your Own Web Free Sample (YFS) provides simple browser pages in a Git version control repository. Visit https://sites.google.com/site/friedbook/ for more information."
-    VIAddVersionKey CompanyName ${YFS_CompanyName}
+    ; VIAddVersionKey CompanyName "company name"
     VIAddVersionKey LegalCopyright "Public Domain"
     VIAddVersionKey FileDescription "${YFS_LongName} installer"
     VIAddVersionKey FileVersion ${YFS_Version}
     VIAddVersionKey ProductVersion ${YFS_Version}
     ; VIAddVersionKey InternalName "There is no internal name for the YFS installer."
-    VIAddVersionKey LegalTrademarks "Friedbook is a Trademark of Scott Haines."
+    ; VIAddVersionKey LegalTrademarks "There are no known trademarks in the install."
     VIAddVersionKey OriginalFilename "${YFS_InstallerName}"
 
     ; Initialize the INSTDIR.
