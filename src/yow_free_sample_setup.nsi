@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 31 Scott Haines
+; edit: 32 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -289,6 +289,16 @@ SectionEnd
 
 Function .onInit
 
+    Var /GLOBAL getParams
+    Var /GLOBAL getDefault
+    ${GetParameters} $getParams
+    ${GetOptions} $getParams "/default=" $getDefault
+    ; If /default=all is a command line parameter.
+    ${If} "all" == "$getDefault"
+        ; Remove all of the installer's registry settings.
+        ; These are setup UI language and install path.
+        DeleteRegKey /ifempty HKCU "Software\YOW\Free Sample"
+    ${EndIf}
     ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallLocation"
     StrCpy $dirDraft "$0"
 
