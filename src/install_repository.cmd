@@ -1,23 +1,22 @@
 rem file: install_repository.cmd
 rem created: 2016 01 06, Scott Haines
-rem edit: 07 Scott Haines
-rem date: 2016 01 31
+rem edit: 09 Scott Haines
+rem date: 2016 02 27
 rem This installs the YOW Free Sample Git repository by cloning it into
 rem the directory named repository.
+rem The percent 1 parameter is the Git program path.
+rem The percent 2 parameter is the install path.
 
-rem git clone https://github.com/scotthaines/yow_free_sample.git repository
-rem git clone c:\projects\yow_free_sample repository
-rem "C:\Program Files\Git\bin\"bash install_repository.sh
-%1bin\bash install_repository.sh
+rem Save the current directory path.
+set YFSTempDir=%~dp0
+
+rem Move to the installation directory.
+cd %2
+
+rem The following is a commented out pause for debugging.
+rem pause
+
+%1bin\bash %YFSTempDir%install_repository.sh
 set STORE_ERRORLEVEL=%ERRORLEVEL%
 
-rem rem if there is no error creating the repository
-rem if %STORE_ERRORLEVEL% EQU 0 (
-rem     rem Remove the remote origin to avoid unintended pushes YOW Free Sample
-rem 	rem on GitHub.
-rem 	cd repository
-rem 	git remote remove origin
-rem 	cd ..
-rem )
-rem pause
 exit /B %STORE_ERRORLEVEL%

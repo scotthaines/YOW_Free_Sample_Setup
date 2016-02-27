@@ -10,6 +10,10 @@
 # Run the next line to see commands and expand variables before running them.
 # set -x
 git clone c:/projects/yow_free_sample repository
+
+# The following is a commented out pause for debugging.
+# read -p "Pause. Press enter to continue."
+
 # Save the clone command's return code.
 # We do not want the return code of the 'read' below.
 SH_RETURN_CODE=$?

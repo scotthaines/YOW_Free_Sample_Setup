@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 30 Scott Haines
+; edit: 31 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -32,13 +32,10 @@
     VIProductVersion ${YFS_Version}
     VIAddVersionKey ProductName "${YFS_LongName}"
     VIAddVersionKey Comments "Your Own Web Free Sample (YFS) provides simple browser pages in a Git version control repository. Visit https://sites.google.com/site/friedbook/ for more information."
-    ; VIAddVersionKey CompanyName "company name"
     VIAddVersionKey LegalCopyright "Public Domain"
     VIAddVersionKey FileDescription "${YFS_LongName} installer"
     VIAddVersionKey FileVersion ${YFS_Version}
     VIAddVersionKey ProductVersion ${YFS_Version}
-    ; VIAddVersionKey InternalName "There is no internal name for the YFS installer."
-    ; VIAddVersionKey LegalTrademarks "There are no known trademarks in the install."
     VIAddVersionKey OriginalFilename "${YFS_InstallerName}"
 
     ; Initialize the INSTDIR.
@@ -93,7 +90,7 @@ Function ADirLv
         StrCpy $dirDraft $INSTDIR
     ${Else}
         ; Make the user try again.
-        MessageBox MB_OK "The install directory must be empty or not exist. Enter another install directory." /SD IDOK
+        MessageBox MB_OK "The destination folder must be empty or not exist. Enter another destination folder." /SD IDOK
         Abort
     ${EndIf}
 FunctionEnd
@@ -116,7 +113,6 @@ FunctionEnd
     !insertmacro MUI_LANGUAGE "Vietnamese"
 
 ;--------------------------------
-    ; ReserveFile MyPlugin.dll
     !insertmacro MUI_RESERVEFILE_LANGDLL ; Language selection dialog
 
 ;-------------------------------
@@ -232,11 +228,12 @@ REG_READ_SUCCESS:
     ; Add files and folders to install here.
 
     ; This installs the YOW Free Sample Git repository.
+    SetOutPath $PLUGINSDIR
     File install_repository.cmd
     File install_repository.sh
 
     ; Install the repository.
-    ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\"' $0
+    ExecWait '"install_repository.cmd" $\"$GitInstallLocation$\" $\"$dirDraft$\"' $0
     ; If the return value is 0
     StrCmp "0" $0 0 INSTALLREPO_FAILURE
         ; Print success on cloning text.
@@ -251,17 +248,12 @@ INSTALLREPO_FAILURE:
 
 INSTALL_CONTINUE:
     ; Install the rest of the files.
+    SetOutPath $dirDraft
 
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
     ; Name the shortcut with the last folder's name.
     CreateShortCut "$R0.lnk" "$dirDraft\repository\web\index.html"
-
-    ; Install the installer so people can easily see it.
-    ; I think this is confusing for people who just want to
-    ; use YOW Free Sample so the release version of this
-    ; installer should not include this.
-    File yow_free_sample_setup.nsi
 
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$dirDraft"
