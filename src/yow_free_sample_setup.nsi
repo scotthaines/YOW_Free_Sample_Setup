@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 33 Scott Haines
-; date: 2016 02 27
+; edit: 34 Scott Haines
+; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -70,7 +70,8 @@
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 
 !define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\n$_CLICK"
-    !insertmacro MUI_PAGE_WELCOME
+!define MUI_WELCOMEFINISHPAGE_BITMAP "..\data\yow_free_sample_green.bmp"
+!insertmacro MUI_PAGE_WELCOME
 !define MUI_PAGE_HEADER_TEXT "Public Domain Dedication"
 !define MUI_PAGE_HEADER_SUBTEXT "Please review the dedication Deed and Legal Code before installing $(^NameDA)."
 !define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the dedication."
@@ -268,7 +269,7 @@ INSTALL_CONTINUE:
     ; Install the rest of the files.
     SetOutPath $dirDraft
 
-	File "..\data\Public_Domain_Dedication.txt"
+    File "..\data\Public_Domain_Dedication.txt"
 
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
