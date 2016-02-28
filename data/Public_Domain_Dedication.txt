@@ -1,7 +1,13 @@
+This document contains both the Deed and Legal Code for the Public Domain Declaration for YOW Free Sample. The Deed is a human-readable summary of the Legal Code.
+
+References and their footnotes are marked with lower case letters in square brackets. '[a]' is an example.
+
+----
+
 CC0 1.0 Universal (CC0 1.0) 
 Public Domain Dedication
 Commons Deed[a]
-    This is a human-readable summary of the Legal Code (Full text is further on in this document.).
+
     Disclaimer[b]
 
 No Copyright (0)
