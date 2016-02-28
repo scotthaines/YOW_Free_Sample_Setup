@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 32 Scott Haines
+; edit: 33 Scott Haines
 ; date: 2016 02 27
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -65,15 +65,25 @@
 ;-------------------------------
 ; MUI pages
 
-; The following two defines make the show details displayed before the
+; The following define makes the show details displayed before the
 ; finish page.
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 
+!define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\n$_CLICK"
     !insertmacro MUI_PAGE_WELCOME
-;    !insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
+!define MUI_PAGE_HEADER_TEXT "Public Domain Dedication"
+!define MUI_PAGE_HEADER_SUBTEXT "Please review the dedication Deed and Legal Code before installing $(^NameDA)."
+!define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the dedication."
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "$_CLICK"
+!define MUI_LICENSEPAGE_BUTTON "&Next >"
+    !insertmacro MUI_PAGE_LICENSE "..\data\Public_Domain_Dedication.txt"
     !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
+!define MUI_PAGE_HEADER_TEXT "Who directory"
+!define MUI_PAGE_HEADER_SUBTEXT "What directory"
+!define MUI_DIRECTORYPAGE_TEXT_TOP "When directory"
+!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "Where directory"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
     !insertmacro MUI_PAGE_FINISH
@@ -258,6 +268,8 @@ INSTALL_CONTINUE:
     ; Install the rest of the files.
     SetOutPath $dirDraft
 
+	File "..\data\Public_Domain_Dedication.txt"
+
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
     ; Name the shortcut with the last folder's name.
@@ -286,7 +298,7 @@ SectionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecDraft ${LANG_ENGLISH} "Edit these pages to learn and create your own pages."
+  LangString DESC_SecDraft ${LANG_ENGLISH} "This install of YOW Free Sample pages and their Git repository is a clone of their repository on GitHub.$\r$\n$\r$\nEdit and commit these pages to create Your Own Web of pages."
   LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut to the YOW Free Sample home page."
 
   ; Assign language strings to sections
