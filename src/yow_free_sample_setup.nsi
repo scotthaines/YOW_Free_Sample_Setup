@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 34 Scott Haines
+; edit: 35 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -65,11 +65,13 @@
 ;-------------------------------
 ; MUI pages
 
+    Var /GLOBAL dirDraft
+
 ; The following define makes the show details displayed before the
 ; finish page.
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 
-!define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\n$_CLICK"
+!define MUI_WELCOMEPAGE_TEXT "Setup will guide you through the installation of $(^NameDA).$\r$\n$\r$\nEdit YOW Free Sample to write Your Own Web.$\r$\n$\r$\n$_CLICK"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "..\data\yow_free_sample_green.bmp"
 !insertmacro MUI_PAGE_WELCOME
 !define MUI_PAGE_HEADER_TEXT "Public Domain Dedication"
@@ -87,9 +89,15 @@
 !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "Where directory"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_TEXT "&Display installed Home page."
+!define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
     !insertmacro MUI_PAGE_FINISH
 
-    Var /GLOBAL dirDraft
+Function LaunchLink
+    ExecShell "" "$dirDraft\repository\web\index.html"
+FunctionEnd
+
     Var /GLOBAL homeDir
 
 Function ADirPre
@@ -299,8 +307,8 @@ SectionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecDraft ${LANG_ENGLISH} "This install of YOW Free Sample pages and their Git repository is a clone of their repository on GitHub.$\r$\n$\r$\nEdit and commit these pages to create Your Own Web of pages."
-  LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut to the YOW Free Sample home page."
+  LangString DESC_SecDraft ${LANG_ENGLISH} "Install YOW Free Sample pages and their Git repository. It is a clone of their repository on GitHub.$\r$\n$\r$\nEdit and commit these pages to create Your Own Web of pages."
+  LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut to the YOW Free Sample (YFS) home page."
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

@@ -1,6 +1,6 @@
 This document contains both the Deed and Legal Code for the Public Domain Declaration for YOW Free Sample. The Deed is a human-readable summary of the Legal Code.
 
-References and their footnotes are marked with lower case letters in square brackets. '[a]' is an example.
+References and footnotes are marked with lower case letters in square brackets, e.g. [a].
 
 ----
 
