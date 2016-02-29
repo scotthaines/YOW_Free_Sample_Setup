@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 36 Scott Haines
+; edit: 37 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -80,6 +80,7 @@
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "$_CLICK"
 !define MUI_LICENSEPAGE_BUTTON "&Next >"
     !insertmacro MUI_PAGE_LICENSE "..\data\Public_Domain_Dedication.txt"
+!define MUI_PAGE_CUSTOMFUNCTION_PRE "ReadShortcutChoice"
     !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
@@ -122,6 +123,7 @@ Function ADirLv
         MessageBox MB_OK "The destination folder must be empty or not exist. Enter another destination folder." /SD IDOK
         Abort
     ${EndIf}
+
 FunctionEnd
 
 ;-------------------------------
@@ -289,12 +291,13 @@ INSTALL_CONTINUE:
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$dirDraft"
 
+    Call WriteShortcutChoice
+
 SectionEnd
 
 ;-------------------------------
 ; Installer section
-; Create the bare repository and push to it to initialize it and the
-; push path of the draft repository.
+; Create the desktop shortcut.
 Section "desktop shortcut" SecDesktopShortcut
     ; The 2 means the section is the second listed in the components page.
     SectionIn 2
@@ -337,6 +340,35 @@ Function .onInit
 
     !insertmacro MUI_LANGDLL_DISPLAY
 
+FunctionEnd
+
+Function WriteShortcutChoice
+    ; Write the desktop shortcut creation choice to the registry.
+    ; This is used to set the initial choice during the next install.
+    SectionGetFlags ${SecDesktopShortcut} $0
+    IntOp $0 $0 & ${SF_SELECTED}
+    ${If} $0 == ${SF_SELECTED}
+        WriteRegStr HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut" "true"
+    ${Else}
+        WriteRegStr HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut" "false"
+    ${EndIf}
+FunctionEnd
+
+Function ReadShortcutChoice
+    ; Read the desktop shortcut creation choice from the registry.
+    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut"
+    ; "" is returned if no entry exists. This makes 'else' checked default.
+    ${If} $0 == "false"
+        ; Lower the selected flag.
+        SectionGetFlags ${SecDesktopShortcut} $0
+        IntOp $0 $0 & ${SECTION_OFF}
+        SectionSetFlags ${SecDesktopShortcut} $0
+    ${Else}
+        ; Raise the selected flag.
+        SectionGetFlags ${SecDesktopShortcut} $0
+        IntOp $0 $0 | ${SF_SELECTED}
+        SectionSetFlags ${SecDesktopShortcut} $0
+    ${EndIf}
 FunctionEnd
 
 ;===============================
