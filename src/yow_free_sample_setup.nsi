@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 38 Scott Haines
+; edit: 39 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -84,10 +84,6 @@
     !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
-!define MUI_PAGE_HEADER_TEXT "Who directory"
-!define MUI_PAGE_HEADER_SUBTEXT "What directory"
-!define MUI_DIRECTORYPAGE_TEXT_TOP "When directory"
-!define MUI_DIRECTORYPAGE_TEXT_DESTINATION "Where directory"
     !insertmacro MUI_PAGE_DIRECTORY
     !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_RUN
