@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 40 Scott Haines
+; edit: 41 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -36,6 +36,7 @@
     VIAddVersionKey FileDescription "${YFS_LongName} installer"
     VIAddVersionKey FileVersion ${YFS_Version}
     VIAddVersionKey ProductVersion ${YFS_Version}
+    VIAddVersionKey LegalTrademarks "Friedbook, $\"Your Own Web$\" and YOW are Trademarks of Scott Haines."
     VIAddVersionKey OriginalFilename "${YFS_InstallerName}"
 
     ; Initialize the INSTDIR.
