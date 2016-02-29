@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 41 Scott Haines
+; edit: 42 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -219,7 +219,8 @@ INSTALL_GIT32:
         SetOutPath $PLUGINSDIR
         SetRegView 32
         File ..\data\Git-2.7.2-32-bit.exe
-        ExecWait '"Git-2.7.2-32-bit.exe"' $0
+        File ..\data\GitInf.txt
+        ExecWait '"Git-2.7.2-32-bit.exe" /LOADINF=GitInf.txt' $0
         SetOutPath $dirDraft
 ;       Goto REG_READ_SUCCESS
         StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
@@ -239,7 +240,8 @@ INSTALL_GIT64:
     SetOutPath $PLUGINSDIR
     SetRegView 64
     File ..\data\Git-2.7.2-64-bit.exe
-    ExecWait '"Git-2.7.2-64-bit.exe"' $0
+    File ..\data\GitInf.txt
+    ExecWait '"Git-2.7.2-64-bit.exe" /LOADINF=GitInf.txt' $0
     SetOutPath $dirDraft
 ;   Goto REG_READ_SUCCESS
     StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
