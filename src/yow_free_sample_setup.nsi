@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 37 Scott Haines
+; edit: 38 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -93,6 +93,7 @@
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "&Open Home page (index.html) folder."
 !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+!define MUI_FINISHPAGE_RUN_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME "$dirDraft\repository\web\index.html"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "&Display Home page."
     !insertmacro MUI_PAGE_FINISH
