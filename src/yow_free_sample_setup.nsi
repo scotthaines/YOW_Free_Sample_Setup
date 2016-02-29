@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 39 Scott Haines
+; edit: 40 Scott Haines
 ; date: 2016 02 28
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -19,7 +19,7 @@
     !define MUI_ICON "..\data\yow_free_sample_green.ico"
 
 ;--------------------------------
-;Version Information
+; Version Information
 
     !define YFS_Version 1.0.0.0
     !define YFS_LongName "YOW Free Sample"
@@ -159,7 +159,6 @@ Section "draft (required)" SecDraft
     InitPluginsDir
 
     ; Set output path to the installation directory.
-;    SetOutPath $INSTDIR
     SetOutPath $dirDraft
 
     ;--------
@@ -218,9 +217,8 @@ INSTALL_GIT32:
 ;       MessageBox MB_OK "Install 32 bit Git."
         SetOutPath $PLUGINSDIR
         SetRegView 32
-        File ..\data\Git-2.7.0-32-bit.exe
-        ExecWait '"Git-2.7.0-32-bit.exe"' $0
-;        SetOutPath $INSTDIR
+        File ..\data\Git-2.7.2-32-bit.exe
+        ExecWait '"Git-2.7.2-32-bit.exe"' $0
         SetOutPath $dirDraft
 ;       Goto REG_READ_SUCCESS
         StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
@@ -239,9 +237,8 @@ INSTALL_GIT64:
 ;   MessageBox MB_OK "Install 64 bit Git."
     SetOutPath $PLUGINSDIR
     SetRegView 64
-    File ..\data\Git-2.7.0-64-bit.exe
-    ExecWait '"Git-2.7.0-64-bit.exe"' $0
-;    SetOutPath $INSTDIR
+    File ..\data\Git-2.7.2-64-bit.exe
+    ExecWait '"Git-2.7.2-64-bit.exe"' $0
     SetOutPath $dirDraft
 ;   Goto REG_READ_SUCCESS
     StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
