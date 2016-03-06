@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 43 Scott Haines
-; date: 2016 02 28
+; edit: 44 Scott Haines
+; date: 2016 03 06
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -95,12 +95,12 @@
 !define MUI_FINISHPAGE_RUN_TEXT "&Open Home page (index.html) folder."
 !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
-!define MUI_FINISHPAGE_SHOWREADME "$dirDraft\repository\web\index.html"
+!define MUI_FINISHPAGE_SHOWREADME "$dirDraft\repository\index.html"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "&Display Home page."
     !insertmacro MUI_PAGE_FINISH
 
 Function LaunchLink
-    Exec '"$WINDIR\explorer.exe" /e,$dirDraft\repository\web'
+    Exec '"$WINDIR\explorer.exe" /e,$dirDraft\repository'
 FunctionEnd
 
     Var /GLOBAL homeDir
@@ -287,7 +287,7 @@ INSTALL_CONTINUE:
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
     ; Name the shortcut with the last folder's name.
-    CreateShortCut "$R0.lnk" "$dirDraft\repository\web\index.html"
+    CreateShortCut "$R0.lnk" "$dirDraft\repository\index.html"
 
     ; Remember the installation folder.
     WriteRegStr HKCU "Software\YOW\Free Sample" "InstallLocation" "$dirDraft"
@@ -305,7 +305,7 @@ Section "desktop shortcut" SecDesktopShortcut
 
     ; Get the last folder name in the dirDraft path.
     ${GetFileName} "$dirDraft" $R0
-    CreateShortCut "$DESKTOP\$R0.lnk" "$dirDraft\repository\web\index.html"
+    CreateShortCut "$DESKTOP\$R0.lnk" "$dirDraft\repository\index.html"
 
 SectionEnd
 
