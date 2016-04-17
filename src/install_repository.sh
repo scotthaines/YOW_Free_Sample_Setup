@@ -1,8 +1,8 @@
 #!/bin/bash
 # file: install_repository.sh
 # created: 2016 01 31, Scott Haines
-# edit: 08 Scott Haines
-# date: 2016 04 05
+# edit: 09 Scott Haines
+# date: 2016 04 17
 # This shell script runs in Git's bash. It installs the YOW Free Sample Git 
 # repository by cloning it into the directory named repository in the
 # current working directory.
@@ -17,9 +17,9 @@ git clone https://github.com/scotthaines/YOW_Free_Sample.git repository
 # We do not want the return code of the 'read' below.
 SH_RETURN_CODE=$?
 
-# Switch checkout to the v1.2.0 tag and create a branch there.
+# Switch checkout to the v1.3.0 tag and create a branch there.
 cd repository
-git checkout -B branch_v1.2.0 v1.2.0
+git checkout -B branch_v1.3.0 v1.3.0
 
 # The following is a commented out pause for debug testing.
 # read -p "Pause. Press enter to continue."
