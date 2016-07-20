@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 50 Scott Haines
-; date: 2016 06 08
+; edit: 51 Scott Haines
+; date: 2016 07 19
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -21,10 +21,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define YFS_Version 1.4.0.0
+    !define YFS_Version 1.5.0.0
     !define YFS_LongName "YOW Free Sample"
     !define YFS_ShortName "YFS"
-    !define YFS_InstallerName "YOWFreeSampleSetup_1_4_0.exe"
+    !define YFS_InstallerName "YOWFreeSampleSetup_1_5_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
@@ -222,9 +222,9 @@ INSTALL_GIT32:
 ;       MessageBox MB_OK "Install 32 bit Git."
         SetOutPath $PLUGINSDIR
         SetRegView 32
-        File ..\data\Git-2.8.4-32-bit.exe
+        File ..\data\Git-2.9.2-32-bit.exe
         File ..\data\GitInf.txt
-        ExecWait '"Git-2.8.4-32-bit.exe" /LOADINF=GitInf.txt' $0
+        ExecWait '"Git-2.9.2-32-bit.exe" /LOADINF=GitInf.txt' $0
         SetOutPath $dirDraft
 ;       Goto REG_READ_SUCCESS
         StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
@@ -243,9 +243,9 @@ INSTALL_GIT64:
 ;   MessageBox MB_OK "Install 64 bit Git."
     SetOutPath $PLUGINSDIR
     SetRegView 64
-    File ..\data\Git-2.8.4-64-bit.exe
+    File ..\data\Git-2.9.2-64-bit.exe
     File ..\data\GitInf.txt
-    ExecWait '"Git-2.8.4-64-bit.exe" /LOADINF=GitInf.txt' $0
+    ExecWait '"Git-2.9.2-64-bit.exe" /LOADINF=GitInf.txt' $0
     SetOutPath $dirDraft
 ;   Goto REG_READ_SUCCESS
     StrCpy $GitInstallCheckAB "CheckB"  ; This indicates second check.
