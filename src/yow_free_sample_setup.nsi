@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 53 Scott Haines
-; date: 2016 11 19
+; edit: 54 Scott Haines
+; date: 2016 11 20
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -85,7 +85,7 @@
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "$_CLICK"
 !define MUI_LICENSEPAGE_BUTTON "&Next >"
     !insertmacro MUI_PAGE_LICENSE "..\data\Public_Domain_Dedication.txt"
-!define MUI_PAGE_CUSTOMFUNCTION_PRE "ReadShortcutChoice"
+!define MUI_PAGE_CUSTOMFUNCTION_PRE "ReadStoredChoices"
     !insertmacro MUI_PAGE_COMPONENTS
 !define MUI_PAGE_CUSTOMFUNCTION_PRE "ADirPre"
 !define MUI_PAGE_CUSTOMFUNCTION_LEAVE "ADirLv"
@@ -294,6 +294,8 @@ INSTALL_CONTINUE:
 
     Call WriteShortcutChoice
 
+    Call WriteSearchInstallChoice
+
 SectionEnd
 
 ;-------------------------------
@@ -371,7 +373,9 @@ Function WriteShortcutChoice
     ${EndIf}
 FunctionEnd
 
-Function ReadShortcutChoice
+Function ReadStoredChoices
+    ; Read all stored choices from the registry.
+    ; 
     ; Read the desktop shortcut creation choice from the registry.
     ReadRegStr $0 HKCU "Software\YOW\Free Sample" "CreateDesktopShortcut"
     ; "" is returned if no entry exists. This makes 'else' checked default.
@@ -385,6 +389,33 @@ Function ReadShortcutChoice
         SectionGetFlags ${SecDesktopShortcut} $0
         IntOp $0 $0 | ${SF_SELECTED}
         SectionSetFlags ${SecDesktopShortcut} $0
+    ${EndIf}
+
+    ; Read the search install choice from the registry.
+    ReadRegStr $0 HKCU "Software\YOW\Free Sample" "InstallSearch"
+    ; "" is returned if no entry exists. This makes 'else' checked default.
+    ${If} $0 == "false"
+        ; Lower the selected flag.
+        SectionGetFlags ${SecInstallDFPSearchWithIndex} $0
+        IntOp $0 $0 & ${SECTION_OFF}
+        SectionSetFlags ${SecInstallDFPSearchWithIndex} $0
+    ${Else}
+        ; Raise the selected flag.
+        SectionGetFlags ${SecInstallDFPSearchWithIndex} $0
+        IntOp $0 $0 | ${SF_SELECTED}
+        SectionSetFlags ${SecInstallDFPSearchWithIndex} $0
+    ${EndIf}
+FunctionEnd
+
+Function WriteSearchInstallChoice
+    ; Write the search install choice to the registry.
+    ; This is used to set the initial choice during the next install.
+    SectionGetFlags ${SecInstallDFPSearchWithIndex} $0
+    IntOp $0 $0 & ${SF_SELECTED}
+    ${If} $0 == ${SF_SELECTED}
+        WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "true"
+    ${Else}
+        WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "false"
     ${EndIf}
 FunctionEnd
 
