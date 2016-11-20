@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 52 Scott Haines
-; date: 2016 08 14
+; edit: 53 Scott Haines
+; date: 2016 11 19
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -21,10 +21,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define YFS_Version 1.6.0.0
+    !define YFS_Version 2.0.0.0
     !define YFS_LongName "YOW Free Sample"
     !define YFS_ShortName "YFS"
-    !define YFS_InstallerName "YOWFreeSampleSetup_1_6_0.exe"
+    !define YFS_InstallerName "YOWFreeSampleSetup_2_0_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
@@ -309,17 +309,33 @@ Section "desktop shortcut" SecDesktopShortcut
 
 SectionEnd
 
+;-------------------------------
+; Installer section
+; Install DocFetcher Portable with Index.
+Section "Install Search with Index" SecInstallDFPSearchWithIndex
+    ; The 3 means the section is the third listed in the components page.
+    SectionIn 3
+
+    ; Install DocFetcherPortableWithIndexSetup*.exe so it can be run on
+    ; successful exit to this installer.
+    SetOutPath $PLUGINSDIR
+    File ..\data\DocFetcherPortableWithIndexSetup_1_0_0.exe
+
+SectionEnd
+
 ;--------------------------------
 ; Descriptions
 
   ; Language strings
   LangString DESC_SecDraft ${LANG_ENGLISH} "Install YOW Free Sample pages and their Git repository. It is a clone of their repository on GitHub.$\r$\n$\r$\nEdit and commit these pages to create Your Own Web of pages."
   LangString DESC_SecDesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut to the YOW Free Sample (YFS) home page."
+  LangString DESC_SecInstallDFPSearchWithIndex {LANG_ENGLISH} "Launch the DocFetcher Portable with Index Setup to install Search with an Index to these YOW Free Sample (YFS) pages.$\r$\n$\r$\nUpdate the YFS index when you change the content."
 
   ; Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SecDraft} $(DESC_SecDraft)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktopShortcut} $(DESC_SecDesktopShortcut)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecInstallDFPSearchWithIndex} $(DESC_SecInstallDFPSearchWithIndex)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function .onInit
@@ -369,6 +385,16 @@ Function ReadShortcutChoice
         SectionGetFlags ${SecDesktopShortcut} $0
         IntOp $0 $0 | ${SF_SELECTED}
         SectionSetFlags ${SecDesktopShortcut} $0
+    ${EndIf}
+FunctionEnd
+
+Function .onInstSuccess
+    SectionGetFlags ${SecInstallDFPSearchWithIndex} $R3
+    IntOp $R4 $R3 & ${SF_SELECTED}
+    ; If install search is selected
+    ${If} $R4 != 0
+    ; Run search with index installer.
+        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_0_0.exe"'
     ${EndIf}
 FunctionEnd
 
