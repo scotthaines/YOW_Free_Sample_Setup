@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 54 Scott Haines
-; date: 2016 11 20
+; edit: 55 Scott Haines
+; date: 2016 11 22
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -424,8 +424,9 @@ Function .onInstSuccess
     IntOp $R4 $R3 & ${SF_SELECTED}
     ; If install search is selected
     ${If} $R4 != 0
-    ; Run search with index installer.
-        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_0_0.exe"'
+        ; Run search with index installer. 
+        ; Hide its display of the install directory page.
+        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_0_0.exe" /default=installDir'
     ${EndIf}
 FunctionEnd
 
