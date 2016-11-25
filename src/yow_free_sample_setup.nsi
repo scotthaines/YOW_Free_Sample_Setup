@@ -1,7 +1,7 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 56 Scott Haines
+; edit: 57 Scott Haines
 ; date: 2016 11 25
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
@@ -97,6 +97,7 @@
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
 !define MUI_FINISHPAGE_SHOWREADME "$dirDraft\repository\index.html"
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "&Display Home page."
+!define MUI_PAGE_CUSTOMFUNCTION_PRE "AFinPre"
     !insertmacro MUI_PAGE_FINISH
 
 Function LaunchLink
@@ -416,6 +417,15 @@ Function WriteSearchInstallChoice
         WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "true"
     ${Else}
         WriteRegStr HKCU "Software\YOW\Free Sample" "InstallSearch" "false"
+    ${EndIf}
+FunctionEnd
+
+Function AFinPre
+    SectionGetFlags ${SecInstallDFPSearchWithIndex} $R3
+    IntOp $R4 $R3 & ${SF_SELECTED}
+    ; If install search is selected
+    ${If} $R4 != 0
+        MessageBox MB_OK "Per your $\"Install Search with Index$\" selection the $\"DocFetcher Portable with Index Setup$\" will run when you Finish this setup." /SD IDOK
     ${EndIf}
 FunctionEnd
 
