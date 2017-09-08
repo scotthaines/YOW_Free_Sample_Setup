@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 58 Scott Haines
-; date: 2017 08 23
+; edit: 59 Scott Haines
+; date: 2017 09 08
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -21,10 +21,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define YFS_Version 2.1.0.0
+    !define YFS_Version 2.2.0.0
     !define YFS_LongName "YOW Free Sample"
     !define YFS_ShortName "YFS"
-    !define YFS_InstallerName "YOWFreeSampleSetup_2_1_0.exe"
+    !define YFS_InstallerName "YOWFreeSampleSetup_2_2_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
