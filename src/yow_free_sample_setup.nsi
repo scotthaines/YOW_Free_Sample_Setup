@@ -322,7 +322,7 @@ Section "Install Search with Index" SecInstallDFPSearchWithIndex
     ; Install DocFetcherPortableWithIndexSetup*.exe so it can be run on
     ; successful exit to this installer.
     SetOutPath $PLUGINSDIR
-    File ..\data\DocFetcherPortableWithIndexSetup_1_1_0.exe
+    File ..\data\DocFetcherPortableWithIndexSetup_1_2_0.exe
 
 SectionEnd
 
@@ -436,7 +436,7 @@ Function .onInstSuccess
     ${If} $R4 != 0
         ; Run search with index installer. 
         ; Hide its display of the install directory page.
-        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_1_0.exe" /default=installDir'
+        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_2_0.exe" /default=installDir'
     ${EndIf}
 FunctionEnd
 
