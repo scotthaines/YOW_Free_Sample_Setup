@@ -1,8 +1,8 @@
 ;===============================
 ; file: yow_free_sample_setup.nsi
 ; created: 2015 12 30, Scott Haines
-; edit: 59 Scott Haines
-; date: 2017 09 08
+; edit: 60 Scott Haines
+; date: 2017 09 11
 ; description:  This installs YOW Free Sample and Git if Git is not
 ;               already installed.
 ;-------------------------------
@@ -21,10 +21,10 @@
 ;--------------------------------
 ; Version Information
 
-    !define YFS_Version 2.2.0.0
+    !define YFS_Version 2.3.0.0
     !define YFS_LongName "YOW Free Sample"
     !define YFS_ShortName "YFS"
-    !define YFS_InstallerName "YOWFreeSampleSetup_2_2_0.exe"
+    !define YFS_InstallerName "YOWFreeSampleSetup_2_3_0.exe"
 
     ; Blank the branding text which by default appears as
     ; 'Nullsoft Install System v2.46.5-Unicode'.
@@ -322,7 +322,7 @@ Section "Install Search with Index" SecInstallDFPSearchWithIndex
     ; Install DocFetcherPortableWithIndexSetup*.exe so it can be run on
     ; successful exit to this installer.
     SetOutPath $PLUGINSDIR
-    File ..\data\DocFetcherPortableWithIndexSetup_1_2_0.exe
+    File ..\data\DocFetcherPortableWithIndexSetup_1_3_0.exe
 
 SectionEnd
 
@@ -436,7 +436,7 @@ Function .onInstSuccess
     ${If} $R4 != 0
         ; Run search with index installer. 
         ; Hide its display of the install directory page.
-        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_2_0.exe" /default=installDir'
+        Exec '"$PLUGINSDIR\DocFetcherPortableWithIndexSetup_1_3_0.exe" /default=installDir'
     ${EndIf}
 FunctionEnd
 
